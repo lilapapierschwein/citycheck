@@ -1,0 +1,17 @@
+[project]
+name = "citycheck"
+version = "0.0.0"
+description = "Manage and compare your favorite travel destinations"
+readme = "README.md"
+authors = [
+    { name = "lilapapierschwein", email = "kai.elsaesser@posteo.de" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+citycheck = "citycheck:main"
+
+[build-system]
+requires = ["uv_build>=0.11.18,<0.12.0"]
+build-backend = "uv_build"
