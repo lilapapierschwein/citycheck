@@ -8,3 +8,15 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Local dev files
+local/
+*.db
+*.bak
+*.old
+
+# Secrets
+*.env
+
+# Allow examples
+!*.example
