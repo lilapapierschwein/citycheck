@@ -198,10 +198,11 @@ Geplante Tabellen / Bereiche:
   - name
   - symbol
 
-- weather_statistics_daily (unique: location_id,date)
+- weather_statistics_daily (unique: location_id,stat_date)
   - (PK) weather_statistic_id
   - (FK) location_id
-  - date
+  - stat_date
+  - saved_at
   - temperature_celsius_max
   - temperature_celsius_min
   - temperature_celsius_mean

@@ -1,0 +1,420 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.10 Safari/537.36" version="29.6.1">
+  <diagram id="OZtcgph_5ISGhFLhEW2m" name="Page-1">
+    <mxGraphModel dx="1122" dy="690" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_users" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="users" vertex="1">
+          <mxGeometry height="122" width="220" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u_user_id" parent="t_users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  user_id" vertex="1">
+          <mxGeometry height="24" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="u_username" parent="t_users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    username" vertex="1">
+          <mxGeometry height="24" width="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="u_email" parent="t_users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    email" vertex="1">
+          <mxGeometry height="24" width="220" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="u_home_loc_id" parent="t_users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  home_location_id" vertex="1">
+          <mxGeometry height="24" width="220" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="t_user_loc" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="user_locations" vertex="1">
+          <mxGeometry height="122" width="220" x="40" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="ul_pk" parent="t_user_loc" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  user_location_id" vertex="1">
+          <mxGeometry height="24" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ul_user_id" parent="t_user_loc" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  user_id" vertex="1">
+          <mxGeometry height="24" width="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ul_location_id" parent="t_user_loc" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  location_id" vertex="1">
+          <mxGeometry height="24" width="220" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="ul_saved_at" parent="t_user_loc" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    saved_at" vertex="1">
+          <mxGeometry height="24" width="220" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="t_weather" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;spacingTop=0;spacingBottom=0;fontSize=9;fontColor=#000000;" value="weather_statistics_daily &#xa; [UNIQUE: location_id, stat_date]" vertex="1">
+          <mxGeometry height="482" width="300" x="40" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="w_id" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  weather_statistic_id" vertex="1">
+          <mxGeometry height="24" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="w_location_id" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  location_id" vertex="1">
+          <mxGeometry height="24" width="300" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w_date" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    stat_date" vertex="1">
+          <mxGeometry height="24" width="300" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="w_temp_max" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    temperature_celsius_max" vertex="1">
+          <mxGeometry height="24" width="300" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="w_temp_min" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    temperature_celsius_min" vertex="1">
+          <mxGeometry height="24" width="300" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="w_temp_mean" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    temperature_celsius_mean" vertex="1">
+          <mxGeometry height="24" width="300" y="146" as="geometry" />
+        </mxCell>
+        <mxCell id="w_app_max" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    temperature_apparent_celsius_max" vertex="1">
+          <mxGeometry height="24" width="300" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="w_app_min" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    temperature_apparent_celsius_min" vertex="1">
+          <mxGeometry height="24" width="300" y="194" as="geometry" />
+        </mxCell>
+        <mxCell id="w_app_mean" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    temperature_apparent_celsius_mean" vertex="1">
+          <mxGeometry height="24" width="300" y="218" as="geometry" />
+        </mxCell>
+        <mxCell id="w_sunrise" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    sunrise_time" vertex="1">
+          <mxGeometry height="24" width="300" y="242" as="geometry" />
+        </mxCell>
+        <mxCell id="w_sunset" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    sunset_time" vertex="1">
+          <mxGeometry height="24" width="300" y="266" as="geometry" />
+        </mxCell>
+        <mxCell id="w_daylight" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    daylight_duration_seconds" vertex="1">
+          <mxGeometry height="24" width="300" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="w_sunshine" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    sunshine_duration_seconds" vertex="1">
+          <mxGeometry height="24" width="300" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="w_snowfall" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    snowfall_cm" vertex="1">
+          <mxGeometry height="24" width="300" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="w_wind" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    max_wind_speed_ms" vertex="1">
+          <mxGeometry height="24" width="300" y="362" as="geometry" />
+        </mxCell>
+        <mxCell id="w_cloud_max" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    cloud_cover_max_percent" vertex="1">
+          <mxGeometry height="24" width="300" y="386" as="geometry" />
+        </mxCell>
+        <mxCell id="w_cloud_min" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    cloud_cover_min_percent" vertex="1">
+          <mxGeometry height="24" width="300" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="w_cloud_mean" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    cloud_cover_mean_percent" vertex="1">
+          <mxGeometry height="24" width="300" y="434" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-26" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    saved_at" vertex="1">
+          <mxGeometry height="24" width="300" y="458" as="geometry" />
+        </mxCell>
+        <mxCell id="t_locations" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" value="locations" vertex="1">
+          <mxGeometry height="194" width="240" x="420" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="l_location_id" parent="t_locations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  location_id" vertex="1">
+          <mxGeometry height="24" width="240" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="l_name" parent="t_locations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    name" vertex="1">
+          <mxGeometry height="24" width="240" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="l_alias_name" parent="t_locations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    alias_name" vertex="1">
+          <mxGeometry height="24" width="240" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="l_latitude" parent="t_locations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    latitude" vertex="1">
+          <mxGeometry height="24" width="240" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="l_longitude" parent="t_locations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    longitude" vertex="1">
+          <mxGeometry height="24" width="240" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="l_country_id" parent="t_locations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  country_id" vertex="1">
+          <mxGeometry height="24" width="240" y="146" as="geometry" />
+        </mxCell>
+        <mxCell id="l_timezone_id" parent="t_locations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  timezone_id" vertex="1">
+          <mxGeometry height="24" width="240" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="t_cap_cities" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" value="capital_cities" vertex="1">
+          <mxGeometry height="98" width="240" x="420" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="cap_pk" parent="t_cap_cities" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  capital_city_id" vertex="1">
+          <mxGeometry height="24" width="240" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-19" edge="1" parent="t_cap_cities" source="cap_location_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-40" y="62" />
+              <mxPoint x="-40" y="-232" />
+            </Array>
+            <mxPoint y="-232.0689655172414" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cap_location_id" parent="t_cap_cities" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  location_id" vertex="1">
+          <mxGeometry height="24" width="240" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cap_country_id" parent="t_cap_cities" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  country_id" vertex="1">
+          <mxGeometry height="24" width="240" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="t_countries" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f8cecc;strokeColor=#b85450;" value="countries" vertex="1">
+          <mxGeometry height="362" width="260" x="800" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_country_id" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  country_id" vertex="1">
+          <mxGeometry height="24" width="260" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c_country_code" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    country_code" vertex="1">
+          <mxGeometry height="24" width="260" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="c_official_name" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    official_name" vertex="1">
+          <mxGeometry height="24" width="260" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c_common_name" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    common_name" vertex="1">
+          <mxGeometry height="24" width="260" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="c_cca2" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    cca2" vertex="1">
+          <mxGeometry height="24" width="260" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="c_cca3" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    cca3" vertex="1">
+          <mxGeometry height="24" width="260" y="146" as="geometry" />
+        </mxCell>
+        <mxCell id="c_region_id" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  region_id" vertex="1">
+          <mxGeometry height="24" width="260" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="c_subregion_id" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  subregion_id" vertex="1">
+          <mxGeometry height="24" width="260" y="194" as="geometry" />
+        </mxCell>
+        <mxCell id="c_area_sqkm" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    area_sqkm" vertex="1">
+          <mxGeometry height="24" width="260" y="218" as="geometry" />
+        </mxCell>
+        <mxCell id="c_tld" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    tld" vertex="1">
+          <mxGeometry height="24" width="260" y="242" as="geometry" />
+        </mxCell>
+        <mxCell id="c_flag" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    flag" vertex="1">
+          <mxGeometry height="24" width="260" y="266" as="geometry" />
+        </mxCell>
+        <mxCell id="c_googlemaps" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    googlemaps" vertex="1">
+          <mxGeometry height="24" width="260" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="c_openstreetmaps" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    openstreetmaps" vertex="1">
+          <mxGeometry height="24" width="260" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="c_population" parent="t_countries" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    population" vertex="1">
+          <mxGeometry height="24" width="260" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="t_ctimezones" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="countries_timezones" vertex="1">
+          <mxGeometry height="74" width="240" x="800" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="ct_country_id" parent="t_ctimezones" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  country_id" vertex="1">
+          <mxGeometry height="24" width="240" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ct_timezone_id" parent="t_ctimezones" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  timezone_id" vertex="1">
+          <mxGeometry height="24" width="240" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t_ccontinents" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="countries_continents" vertex="1">
+          <mxGeometry height="74" width="240" x="800" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="cc_country_id" parent="t_ccontinents" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  country_id" vertex="1">
+          <mxGeometry height="24" width="240" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="cc_continent_id" parent="t_ccontinents" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  continent_id" vertex="1">
+          <mxGeometry height="24" width="240" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t_ccurrencies" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="countries_currencies" vertex="1">
+          <mxGeometry height="74" width="240" x="800" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="ccur_country_id" parent="t_ccurrencies" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  country_id" vertex="1">
+          <mxGeometry height="24" width="240" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ccur_currency_id" parent="t_ccurrencies" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  currency_id" vertex="1">
+          <mxGeometry height="24" width="240" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t_clanguages" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="countries_languages" vertex="1">
+          <mxGeometry height="74" width="240" x="800" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="cl_country_id" parent="t_clanguages" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  country_id" vertex="1">
+          <mxGeometry height="24" width="240" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="cl_language_id" parent="t_clanguages" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  language_id" vertex="1">
+          <mxGeometry height="24" width="240" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t_continents" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;" value="continents" vertex="1">
+          <mxGeometry height="98" width="220" x="1160" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="cont_id" parent="t_continents" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  continent_id" vertex="1">
+          <mxGeometry height="24" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="cont_name" parent="t_continents" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    name" vertex="1">
+          <mxGeometry height="24" width="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cont_iso_code" parent="t_continents" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    iso_code" vertex="1">
+          <mxGeometry height="24" width="220" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="t_regions" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;" value="regions" vertex="1">
+          <mxGeometry height="74" width="220" x="1160" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_id" parent="t_regions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  region_id" vertex="1">
+          <mxGeometry height="24" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_name" parent="t_regions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    name" vertex="1">
+          <mxGeometry height="24" width="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t_subregions" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;" value="subregions" vertex="1">
+          <mxGeometry height="98" width="220" x="1160" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="sub_id" parent="t_subregions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  subregion_id" vertex="1">
+          <mxGeometry height="24" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="sub_region_id" parent="t_subregions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  region_id" vertex="1">
+          <mxGeometry height="24" width="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sub_name" parent="t_subregions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    name" vertex="1">
+          <mxGeometry height="24" width="220" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="t_timezones" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;" value="timezones" vertex="1">
+          <mxGeometry height="74" width="220" x="1160" y="504" as="geometry" />
+        </mxCell>
+        <mxCell id="tz_id" parent="t_timezones" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  timezone_id" vertex="1">
+          <mxGeometry height="24" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tz_name" parent="t_timezones" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    name" vertex="1">
+          <mxGeometry height="24" width="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t_currencies" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;" value="currencies" vertex="1">
+          <mxGeometry height="122" width="220" x="1160" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="cur_id" parent="t_currencies" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  currency_id" vertex="1">
+          <mxGeometry height="24" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="cur_code" parent="t_currencies" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    code" vertex="1">
+          <mxGeometry height="24" width="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cur_name" parent="t_currencies" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    name" vertex="1">
+          <mxGeometry height="24" width="220" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="cur_symbol" parent="t_currencies" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    symbol" vertex="1">
+          <mxGeometry height="24" width="220" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="t_languages" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;" value="languages" vertex="1">
+          <mxGeometry height="122" width="220" x="1160" y="840" as="geometry" />
+        </mxCell>
+        <mxCell id="lang_id" parent="t_languages" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  language_id" vertex="1">
+          <mxGeometry height="24" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="lang_name" parent="t_languages" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    name" vertex="1">
+          <mxGeometry height="24" width="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="lang_iso_code" parent="t_languages" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    iso_code" vertex="1">
+          <mxGeometry height="24" width="220" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="lang_locale" parent="t_languages" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    locale" vertex="1">
+          <mxGeometry height="24" width="220" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="c_region_id" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="reg_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="ct_timezone_id" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="tz_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-2" edge="1" parent="1" source="u_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="l_location_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-1" edge="1" parent="1" source="ul_pk" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="l_location_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="258" />
+              <mxPoint x="380" y="78" />
+            </Array>
+            <mxPoint x="350" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-3" edge="1" parent="1" source="w_location_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="l_location_id">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-4" edge="1" parent="1" source="l_country_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="c_country_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-5" edge="1" parent="1" source="ct_country_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;endArrow=none;endFill=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c_country_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="518" />
+              <mxPoint x="730" y="78" />
+            </Array>
+            <mxPoint x="730" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-10" edge="1" parent="1" source="cl_language_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="lang_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-11" edge="1" parent="1" source="ccur_currency_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="cur_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-12" edge="1" parent="1" source="cc_continent_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="cont_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-13" edge="1" parent="1" source="l_timezone_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="tz_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="770" y="222" />
+              <mxPoint x="770" y="450" />
+              <mxPoint x="1070" y="450" />
+              <mxPoint x="1070" y="542" />
+            </Array>
+            <mxPoint x="1090" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-15" edge="1" parent="1" source="c_subregion_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="sub_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-16" edge="1" parent="1" source="sub_region_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=default;curved=0;" target="reg_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1400" y="402" />
+              <mxPoint x="1400" y="238" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-17" edge="1" parent="1" source="cl_country_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="c_country_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="938" />
+              <mxPoint x="730" y="78" />
+            </Array>
+            <mxPoint x="730" y="840" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-9" edge="1" parent="1" source="cap_country_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;endArrow=none;endFill=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c_country_id">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730.0000000000002" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-7" edge="1" parent="1" source="cc_country_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;curved=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c_country_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="658" />
+              <mxPoint x="730" y="78" />
+            </Array>
+            <mxPoint x="730.0000000000002" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-8" edge="1" parent="1" source="ccur_country_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;curved=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c_country_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="798" />
+              <mxPoint x="730" y="78" />
+            </Array>
+            <mxPoint x="730.0000000000002" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-18" edge="1" parent="1" source="u_home_loc_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="l_location_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="150" />
+              <mxPoint x="380" y="78" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-21" edge="1" parent="1" source="ul_user_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="u_user_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="20" y="282" />
+              <mxPoint x="20" y="78" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-22" edge="1" parent="1" source="ul_location_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="l_location_id">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="306" />
+              <mxPoint x="380" y="78" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

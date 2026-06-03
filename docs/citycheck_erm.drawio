@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.10 Safari/537.36" version="29.6.1">
   <diagram id="OZtcgph_5ISGhFLhEW2m" name="Page-1">
-    <mxGraphModel dx="967" dy="594" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1122" dy="690" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -34,8 +34,8 @@
         <mxCell id="ul_saved_at" parent="t_user_loc" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    saved_at" vertex="1">
           <mxGeometry height="24" width="220" y="98" as="geometry" />
         </mxCell>
-        <mxCell id="t_weather" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" value="weather_statistics_daily  [UNIQUE: location_id, date]" vertex="1">
-          <mxGeometry height="458" width="300" x="40" y="420" as="geometry" />
+        <mxCell id="t_weather" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;spacingTop=0;spacingBottom=0;fontSize=9;fontColor=#000000;" value="weather_statistics_daily &#xa; [UNIQUE: location_id, stat_date]" vertex="1">
+          <mxGeometry height="482" width="300" x="40" y="420" as="geometry" />
         </mxCell>
         <mxCell id="w_id" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=1;" value="PK  weather_statistic_id" vertex="1">
           <mxGeometry height="24" width="300" y="26" as="geometry" />
@@ -43,7 +43,7 @@
         <mxCell id="w_location_id" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontStyle=2;" value="FK  location_id" vertex="1">
           <mxGeometry height="24" width="300" y="50" as="geometry" />
         </mxCell>
-        <mxCell id="w_date" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    date" vertex="1">
+        <mxCell id="w_date" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    stat_date" vertex="1">
           <mxGeometry height="24" width="300" y="74" as="geometry" />
         </mxCell>
         <mxCell id="w_temp_max" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    temperature_celsius_max" vertex="1">
@@ -90,6 +90,9 @@
         </mxCell>
         <mxCell id="w_cloud_mean" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    cloud_cover_mean_percent" vertex="1">
           <mxGeometry height="24" width="300" y="434" as="geometry" />
+        </mxCell>
+        <mxCell id="phuxdRUqerXDnBzSCIYQ-26" parent="t_weather" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;" value="    saved_at" vertex="1">
+          <mxGeometry height="24" width="300" y="458" as="geometry" />
         </mxCell>
         <mxCell id="t_locations" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" value="locations" vertex="1">
           <mxGeometry height="194" width="240" x="420" y="40" as="geometry" />
