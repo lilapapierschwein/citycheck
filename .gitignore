@@ -13,6 +13,7 @@ wheels/
 local/
 *.db
 *.bak
+*.bkp
 *.old
 run
 

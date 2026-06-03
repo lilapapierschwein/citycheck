@@ -14,8 +14,8 @@ _Kompakter Überblick. Eine bis zwei Zeilen pro Eintrag genügen._
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Variante**             | [ ] A – Strompreis-Assistent<br>[X] B – Reise- und Städte-Dashboard                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **Autorin / Autor**      | Kai Elsässer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **Erstellt am**          | 02.06.2026                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **Letzte Änderung**      | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Erstellt am**          | 02.06.2026 13:12                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **Letzte Änderung**      | 03.06.2026 09:41                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Geplanter Tech-Stack** | **Backend:**<br> - _Python v.3.14.5_ (latest stable zu Projekbeginn) verwaltet via _uv_<br>- Datenbank: Sqlite3 (ORM Python-Bibiothek _sqlalchemy_)<br>- Datenvalidierung und -modellierung via Python-_Pydantic_<br> - Restful Api via _FastApi_<br> - Tests via _pytest_<br><br>**Frontend:**<br> - JavaScript, HTML<br>- stateful Application via _HATEOAS_ (Hypermedia as the Engine of Application State) unter Nutzung von der JS-library _htmx_<br><br>**Versionsverwaltung** via _git_ |
 
 ---
@@ -47,8 +47,8 @@ _Was soll die Anwendung können? Pro Punkt eine Funktion. Stichworte reichen. Ve
 
 ### Kann-Anforderungen (Kür)
 
-- Möglichkeit für verschiedene Nutzerkonten per Login
 - Datenexport
+- Möglichkeit für verschiedene Nutzerkonten per Login
 
 ---
 
@@ -56,13 +56,13 @@ _Was soll die Anwendung können? Pro Punkt eine Funktion. Stichworte reichen. Ve
 
 _Eigenschaften der Anwendung jenseits der reinen Funktion: Bedienbarkeit, Antwortzeit, Zuverlässigkeit, Datenschutz, Wartbarkeit. Pro Punkt ein Stichwort plus kurze Erläuterung._
 
-| **Aspekt**      | **Anforderung in Ihrem Projekt** |
-| --------------- | -------------------------------- |
-| Bedienbarkeit   |                                  |
-| Antwortzeit     |                                  |
-| Zuverlässigkeit |                                  |
-| Datenschutz     |                                  |
-| Wartbarkeit     |                                  |
+| **Aspekt**      | **Anforderung in Ihrem Projekt**                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------------- |
+| Bedienbarkeit   | - intuitive Bedienbarkeit durch Best-Practices im UI/UX-Design und die Umsetzung von Barrierfreieheit   |
+| Antwortzeit     | - die Antwortzeit soll möglichst gering sein                                                            |
+| Zuverlässigkeit | - die Anwendung soll zuverlässig laufen und Fehler dürfen nicht zum Absturz führen                      |
+| Datenschutz     | - Umsetzung der Anforderungen der DSGVO                                                                 |
+| Wartbarkeit     | - Wartbarkeit ist durch die Umsetzung von Best-Practices (OOP, Loose Coupling, Clean Code) zu erreichen |
 
 ---
 
@@ -70,13 +70,13 @@ _Eigenschaften der Anwendung jenseits der reinen Funktion: Bedienbarkeit, Antwor
 
 _Beschreiben Sie typische Nutzungssituationen aus Nutzersicht. Format: "Als ... will ich ... damit ich ..." Drei bis fünf User Stories reichen._
 
-| **Nr.** | **Als (Rolle)** | **will ich (Ziel)** | **damit ich (Nutzen)** |
-| ------- | --------------- | ------------------- | ---------------------- |
-| 1       |                 |                     |                        |
-| 2       |                 |                     |                        |
-| 3       |                 |                     |                        |
-| 4       |                 |                     |                        |
-| 5       |                 |                     |                        |
+| **Nr.** | **Als (Rolle)** | **will ich (Ziel)**                                 | **damit ich (Nutzen)**                    |
+| ------- | --------------- | --------------------------------------------------- | ----------------------------------------- |
+| 1       | Nutzer:in       | eine Konto anlegen                                  | die Anwendung nutzen kann.                |
+| 2       | Nutzer:in       | meine Stammdaten ändern oder löschen                | ???                                       |
+| 3       | Nutzer:in       | nach Orten suchen und sie speichern                 | sie in meinen Favoriten habe.             |
+| 4       | Nutzer:in       | Orte löschen                                        | uninteressante Orte nicht weiterhin sehe. |
+| 5       | Nutzer:in       | die Daten (Wetter und weitere) zu einem Ort ansehen | Vergleiche anstellen kann.                |
 
 ---
 
@@ -84,9 +84,8 @@ _Beschreiben Sie typische Nutzungssituationen aus Nutzersicht. Format: "Als ... 
 
 _Was wird die Anwendung explizit NICHT können? Diese Auflistung schützt Sie vor sich selbst - es ist die Erlaubnis, bestimmte Features bewusst NICHT zu bauen._
 
-- ...
-- ...
-- ...
+- Suche nach Reise-Möglichekiten (Flüge, Zugverbindungen etc.)
+- Suche nach lokalen Events zu gespeicherten Orten
 
 ---
 
@@ -107,53 +106,101 @@ _Welche Daten verarbeitet Ihre Anwendung? Woher kommen sie? Wohin gehen sie?_
 
 ### Eigene Datenhaltung (Datenbank / Excel)
 
-Geplante Speicherform: **Datenbank (_sqlite_)**
+Geplante Speicherform: **Datenbank (_sqlite3_)**
 
 Geplante Tabellen / Bereiche:
 
 - users
-  - user_id (PK)
+  - (PK) user_id
   - username
   - email
-  - home_location_id (FK)
+  - (FK) home_location_id
 
 - locations
-  - location_id (PK)
+  - (PK) location_id
   - name
   - alias_name
   - latitude
   - longitude
-  - country_id (FK)
-  - _is_capital_city_
-  - timezone_id (FK)
+  - (FK) country_id
+  - (FK) timezone_id
+
+- user_locations
+  - (PK) user_location_id
+  - (FK) user_id
+  - (FK) location_id
+  - saved_at
 
 - countries
-  - country_id (PK)
+  - (PK) country_id
   - country_code
-  - name
-  - alias_name
-  - language_id (FK)
-  - _capital_city_id_ (FK)
-  - continent_id (FK)
-  - currency_id (FK)
+  - official_name
+  - common_name
+  - cca2
+  - cca3
+  - (FK) region_id
+  - (FK) subregion_id
+  - area_sqkm
+  - tld
+  - flag
+  - googlemaps
+  - openstreetmaps
+  - population
+
+- countries_continents
+  - (FK) country_id
+  - (FK) continent_id
+
+- countries_currencies
+  - (FK) country_id
+  - (FK) currency_id
+
+- capital_cities
+  - (PK) capital_city_id
+  - (FK) location_id
+  - (FK) country_id
+
+- countries_languages
+  - (FK) country_id
+  - (FK) language_id
+
+- countries_timezones
+  - (FK) country_id
+  - (FK) timezone_id
 
 - languages
-  - language_id (PK)
+  - (PK) language_id
   - name
+  - iso_code
+  - locale
 
 - continents
-  - continent_id (PK)
+  - (PK) continent_id
+  - name
+  - iso_code
+
+- regions
+  - (PK) region_id
+  - name
+
+- subregions
+  - (PK) subregion_id
+  - (FK) region_id
   - name
 
 - timezones
-  - timezone_id (PK)
+  - (PK) timezone_id
   - name
-  - is_dst
-  - utcoffset_seconds
 
-- weather_statistics_daily
-  - weather_statistic_id (PK)
-  - location_id (FK)
+- currencies
+  - currency_id (PK)
+  - code
+  - name
+  - symbol
+
+- weather_statistics_daily (unique: location_id,date)
+  - (PK) weather_statistic_id
+  - (FK) location_id
   - date
   - temperature_celsius_max
   - temperature_celsius_min
@@ -164,7 +211,7 @@ Geplante Tabellen / Bereiche:
   - sunrise_time
   - sunset_time
   - daylight_duration_seconds
-  - sunshine_duratio_seconds
+  - sunshine_duration_seconds
   - snowfall_cm
   - max_wind_speed_ms
   - cloud_cover_max_percent
@@ -179,11 +226,11 @@ _Welche Daten könnten potenziell schutzwürdig sein? Wie schützen Sie sie? Sti
 
 | **Aspekt**                           | **Maßnahme in Ihrem Projekt** |
 | ------------------------------------ | ----------------------------- |
-| Welche schutzwürdigen Daten gibt es? | Personenbezogene              |
-| Wo werden sie gespeichert?           |                               |
+| Welche schutzwürdigen Daten gibt es? | E-Mail Adresse, Wohnort       |
+| Wo werden sie gespeichert?           | Datenbank; Tablle _users_     |
 | Wie sind API-Schlüssel geschützt?    | -                             |
 | Wie werden Eingaben validiert?       |                               |
-| Werden Daten an Dritte übertragen?   |                               |
+| Werden Daten an Dritte übertragen?   | nein                          |
 
 ---
 
@@ -191,10 +238,9 @@ _Welche Daten könnten potenziell schutzwürdig sein? Wie schützen Sie sie? Sti
 
 _Was könnte schiefgehen? Technische Risiken, Zeitrisiken, fachliche Lücken. Pro Risiko: Was ist das Risiko? Wie wahrscheinlich ist es? Was tun Sie dagegen?_
 
-| **Risiko** | **Wahrscheinlichkeit** | **Gegenmaßnahme** |
-| ---------- | ---------------------- | ----------------- |
-|            |                        |                   |
-|            |                        |                   |
+| **Risiko**                                  | **Wahrscheinlichkeit** | **Gegenmaßnahme**                                                                                                            |
+| ------------------------------------------- | :--------------------: | ---------------------------------------------------------------------------------------------------------------------------- |
+| unvollständige Implementierung (Zeitrisiko) |         mittel         | zunächst Begrenzung auf minimale Implementierung (Muss-Anforderungen)<br>Kann-Anforderungen erst anschließend implementieren |
 
 ---
 
@@ -202,13 +248,13 @@ _Was könnte schiefgehen? Technische Risiken, Zeitrisiken, fachliche Lücken. Pr
 
 _Welche Module planen Sie? Welche Aufgabe hat jedes Modul? Wie wirken sie zusammen? Eine grobe Liste reicht - eine richtige Skizze als Bild können Sie später anhängen._
 
-| **Modul** | **Aufgabe**                  |
-| --------- | ---------------------------- |
-| main.py   | Einstiegspunkt der Anwendung |
-|           |                              |
-|           |                              |
-|           |                              |
-|           |                              |
+| **Modul**    | **Aufgabe**                  |
+| ------------ | ---------------------------- |
+| **main.py**  | Einstiegspunkt der Anwendung |
+| **core**     | Kern-Logik                   |
+| **db**       | Datenbank-Verwaltung (ORM)   |
+| **api**      | Bereitstellung von Daten     |
+| **frontend** | Client Logik                 |
 
 ---
 
