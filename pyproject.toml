@@ -7,7 +7,11 @@ authors = [
     { name = "lilapapierschwein", email = "kai.elsaesser@posteo.de" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pydantic>=2.13.4",
+    "requests>=2.34.2",
+    "sqlalchemy>=2.0.50",
+]
 
 [project.scripts]
 citycheck = "citycheck:main"
@@ -19,3 +23,4 @@ build-backend = "uv_build"
 [tool.basedpyright]
 # we want to handle library code explicity
 reportExplicitAny = false
+reportAny = false
