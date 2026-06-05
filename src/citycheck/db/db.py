@@ -50,3 +50,6 @@ DB_FILE = Path("citycheck.db")
 
 def init_db(db_file: Path = DB_FILE) -> SqliteDB:
     return SqliteDB(db_file)
+
+
+DB = init_db()

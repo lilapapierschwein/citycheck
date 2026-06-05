@@ -8,7 +8,7 @@ from citycheck.core.validation.models.user import BaseUser
 from citycheck.db.models import User
 
 
-def create_user(data: BaseUser, session: Session) -> User:
+async def create_user(data: BaseUser, session: Session) -> User:
     user = User(**data.model_dump())
 
     session.add(user)
@@ -26,23 +26,25 @@ def create_users(data: list[BaseUser], session: Session) -> list[User]:
     return users
 
 
-def read_user(user_id: int, session: Session) -> User:
-    return session.get_one(User, user_id)
+async def read_user(user_id: int, session: Session) -> User | None:
+    return session.scalar(select(User).where(User.id == user_id))
 
 
-def read_users(session: Session) -> Sequence[User]:
+async def read_users(session: Session) -> Sequence[User]:
     return session.scalars(select(User)).all()
 
 
 # def update_user(user_id: int, session: Session) -> User: ...
 
 
-def delete_user(user_id: int, session: Session) -> None:
+async def delete_user(user_id: int, session: Session) -> None:
     try:
-        user = read_user(1, session)
+        user = await read_user(user_id, session)
+        if not user:
+            raise NoResultFound(f"User with id {user_id} not found.")
         session.delete(user)
         session.commit()
         print(f"User #{user_id} ({repr(user.username)}) deleted.")
     except NoResultFound as err:
-        print(err)
+        raise NoResultFound(str(err)) from NoResultFound
     return None

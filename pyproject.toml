@@ -12,10 +12,12 @@ dependencies = [
     "pydantic>=2.13.4",
     "requests>=2.34.2",
     "sqlalchemy>=2.0.50",
+    "uvicorn[standard]>=0.49.0",
 ]
 
 [project.scripts]
 citycheck = "citycheck:main"
+api = "citycheck.api.main:main"
 
 [build-system]
 requires = ["uv_build>=0.11.18,<0.12.0"]
