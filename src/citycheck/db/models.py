@@ -14,6 +14,16 @@ class Base(DeclarativeBase): ...
 
 @final
 class User(Base):
+    """Represents a user of the application.
+
+    Attributes:
+        id (int): The unique identifier of the user.
+        username (str): The username of the user.
+        email (str): The email address of the user.
+        home_location_id (int | None): The foreign key referencing the user's home location.
+        home_location (Location | None): The relationship to the user's home location.
+    """
+
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(
@@ -49,6 +59,24 @@ class User(Base):
             f"home_location_id={repr(self.home_location_id)}"
             ")"
         )
+
+
+@final
+class Continent(Base):
+    __tablename__ = "continents"
+
+    id: Mapped[int] = mapped_column(
+        "continent_id", INTEGER, primary_key=True, autoincrement=True
+    )
+    name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
+
+    @override
+    def __str__(self) -> str:
+        return self.name
+
+    @override
+    def __repr__(self) -> str:
+        return f"Continent(id={repr(self.id)}, name={repr(self.name)})"
 
 
 @final
@@ -108,6 +136,49 @@ class Subregion(Base):
 
 
 @final
+class Language(Base):
+    __tablename__ = "languages"
+
+    id: Mapped[int] = mapped_column(
+        "language_id", INTEGER, primary_key=True, autoincrement=True
+    )
+    name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
+
+    countries: Mapped[list[Country]] = relationship(back_populates="language")
+
+    @override
+    def __str__(self) -> str:
+        return self.name
+
+    @override
+    def __repr__(self) -> str:
+        return f"Language(id={repr(self.id)}, name={repr(self.name)})"
+
+
+@final
+class Currency(Base):
+    __tablename__ = "currencies"
+
+    id: Mapped[int] = mapped_column(
+        "currency_id", INTEGER, primary_key=True, autoincrement=True
+    )
+    name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
+    symbol: Mapped[str] = mapped_column(
+        "code", VARCHAR(10), unique=True, nullable=False
+    )
+
+    countries: Mapped[list[Country]] = relationship(back_populates="currency")
+
+    @override
+    def __str__(self) -> str:
+        return self.name
+
+    @override
+    def __repr__(self) -> str:
+        return f"Currency(id={repr(self.id)}, name={repr(self.name)})"
+
+
+@final
 class Country(Base):
     __tablename__ = "countries"
 
@@ -123,6 +194,20 @@ class Country(Base):
     tld: Mapped[str] = mapped_column("tld", VARCHAR(10), nullable=False)
     flag: Mapped[str] = mapped_column("flag", VARCHAR(10), nullable=False)
     population: Mapped[int] = mapped_column("population", INTEGER, nullable=False)
+    currency_id: Mapped[int] = mapped_column(
+        "currency",
+        INTEGER,
+        ForeignKey("currencies.currency_id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    currency: Mapped[Currency] = relationship(back_populates="countries")
+    language_id: Mapped[int] = mapped_column(
+        "language_id",
+        INTEGER,
+        ForeignKey("languages.language_id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    language: Mapped[Language] = relationship(back_populates="countries")
     googlemaps: Mapped[str] = mapped_column("googlemaps", TEXT, nullable=False)
     openstreetmaps: Mapped[str] = mapped_column("openstreetmaps", TEXT, nullable=False)
     subregion_id: Mapped[int] = mapped_column(
@@ -149,6 +234,7 @@ class Country(Base):
             f"tld={repr(self.tld)}, "
             f"flag={repr(self.flag)}, "
             f"population={repr(self.population)}, "
+            f"currency_id={repr(self.currency_id)}, "
             f"googlemaps={repr(self.googlemaps)}, "
             f"openstreetmaps={repr(self.openstreetmaps)}, "
             f"subregion_id={repr(self.subregion_id)}"

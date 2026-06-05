@@ -1,7 +1,7 @@
 import re
 from typing import Annotated, ClassVar, override
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, ValidationError
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError
 
 from .location import LocationModel
 
@@ -20,7 +20,9 @@ ValidEmail = Annotated[str, BeforeValidator(validate_email)]
 class BaseUser(BaseModel):
     username: str
     email: ValidEmail
-    home_location_id: int | None = None
+    home_location_id: int | None = Field(default=None)
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(arbitrary_types_allowed=True)
 
     @override
     def __str__(self) -> str:

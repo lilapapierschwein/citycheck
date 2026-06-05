@@ -12,7 +12,7 @@ class BaseContinent(BaseModel):
 
     @override
     def __repr__(self) -> str:
-        return f"BaseConitinent(name={repr(self.name)})"
+        return f"BaseContinent(name={repr(self.name)})"
 
 
 class ContinentModel(BaseContinent):

@@ -5,7 +5,6 @@ from pydantic import BaseModel, ConfigDict
 
 class BaseCurrency(BaseModel):
     name: str
-    code: str
     symbol: str
 
     @override
@@ -14,9 +13,7 @@ class BaseCurrency(BaseModel):
 
     @override
     def __repr__(self) -> str:
-        return (
-            f"BaseCurrency(name={self.name}, code={self.code}, symbol={self.symbol}, )"
-        )
+        return f"BaseCurrency(name={self.name}, symbol={self.symbol})"
 
 
 class CurrencyModel(BaseCurrency):
@@ -30,7 +27,6 @@ class CurrencyModel(BaseCurrency):
             f"{self.__class__.__name__}("
             f"id={self.id}, "
             f"name={self.name}, "
-            f"code={self.code}, "
             f"symbol={self.symbol}"
             ")"
         )
