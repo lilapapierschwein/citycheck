@@ -2,43 +2,30 @@
 # pyright: reportUnusedImport=false
 
 from dataclasses import dataclass
+from modulefinder import test
 from pprint import pprint
 from typing import Any
 
 import requests
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.sql import select
 
-from citycheck.core.crud.user_crud import create_user
+from citycheck.core.crud.location import read_location
+from citycheck.core.crud.user import create_user, delete_user, read_user
+from citycheck.core.requests.get import get_request
+from citycheck.core.requests.sources import SourceAPI
 from citycheck.core.validation.models.location import BaseLocation
 from citycheck.core.validation.models.user import BaseUser, UserModel
 from citycheck.db.db import init_db
-from citycheck.db.models import User
+from citycheck.db.models import Country, Location, User
 
 
-@dataclass
-class API:
-    base_url: str
-    api_version: int
-    endpoint: str
-
-    @property
-    def url(self) -> str:
-        return f"{self.base_url}/v{self.api_version}/{self.endpoint}"
-
-
-def get_request(api: API, params: dict[str, Any]) -> Any:
-    response = requests.get(api.url, params)
-    if response.status_code != 200:
-        response.raise_for_status()
-    return response.json()
-
-
-def get_location_data(name: str, api: API) -> Any:
+def get_location_data(name: str, api: SourceAPI) -> Any:
     location_data: Any = None
     try:
         if name == "":
             raise ValueError("Location name cannot be empty")
-        location_data = get_request(api, {"name": name, "count": 10})
+        location_data = get_request(api, params={"name": name, "count": 10})
     except Exception as e:
         print(e)
     return location_data["results"]
@@ -59,6 +46,31 @@ def get_country_data(code: str) -> Any:
 
 
 def run() -> None:
+    db = init_db()
+
+    with db.get_session() as Session:
+        geocoding_api = SourceAPI("https://geocoding-api.open-meteo.com", "1", "search")
+        loc_data: dict[str, Any] = get_location_data("Leipzig", geocoding_api)[0]
+        name: str = loc_data["name"]
+
+        loc_db = Session.scalar(select(Location).where(Location.name == name))
+        # if not in db, create a new one
+        if loc_db is not None:
+            print(loc_db)
+            return None
+
+        # check if country is stored first
+        country_code: str = loc_data["country_code"]
+        country_db = Session.scalar(select(Country).where(Country.code == country_code))
+        if country_db is not None:
+            print(country_db)
+            return None
+
+        country_data = get_country_data(country_code)
+        pprint(country_data)
+
+        # loc = BaseLocation.model_validate(loc_data)
+        # pprint(loc)
     # de = get_country_data("de")
     # pprint(de[0]["translations"]["deu"], indent=2, sort_dicts=False)
 
@@ -72,18 +84,26 @@ def run() -> None:
     # base_le = BaseLocation.model_validate(le)
     # print(base_le.country_id)
 
-    # new_user = BaseUser(
-    #     username="lilapapierschwein", email="lilapapierschwein@example.com"
-    # )
+    # testuser = {
+    #     "username": "testuser",
+    #     "email": "testuser@example.com",
+    # }
 
     # db = init_db()
     # with db.get_session() as Session:
-    #     user = Session.scalar(select(User).where(User.id == 1))
-    #     if user is None:
-    #         print("User not not found.")
+    #     # user = create_user(BaseUser(**testuser), Session)
+    #
+    #     try:
+    #         user = read_user(1, Session)
+    #     except NoResultFound as err:
+    #         print(err)
     #         return None
     #
     #     print(repr(user))
+
+    # delete_user(1, Session)/www.openstreetmap.org/relation/51477"
+
+    # "population": 83491249,
 
     #     users = Session.scalars(
     #         select(User).where(User.home_location_id.is_(None))
