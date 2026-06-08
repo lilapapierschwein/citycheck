@@ -29,7 +29,7 @@ async def get_users(session: CRUDSession):
     return [UserSchema.model_validate(u) for u in users]
 
 
-@router.post("/")
+@router.post("")
 async def post_user(user_data: UserCreate, session: CRUDSession):
     try:
         user = await crud.create_user(user_data, session)
