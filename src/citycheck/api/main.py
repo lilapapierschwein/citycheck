@@ -4,14 +4,13 @@ from fastapi.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from citycheck.api import crud
+from citycheck.api.utils import CRUDSession
 from citycheck.core.validation.models.user import (
     UserCreate,
     UserModel,
     UserSchema,
 )
 from citycheck.settings import ROOT
-
-from .utils import CRUDSession
 
 app = FastAPI()
 
