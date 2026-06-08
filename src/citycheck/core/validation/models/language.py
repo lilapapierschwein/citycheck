@@ -3,7 +3,7 @@ from typing import ClassVar, override
 from pydantic import BaseModel, ConfigDict
 
 
-class BaseLanguage(BaseModel):
+class LanguageCreate(BaseModel):
     name: str
 
     @override
@@ -15,10 +15,15 @@ class BaseLanguage(BaseModel):
         return f"BaseLanguage(name={repr(self.name)})"
 
 
-class LanguageModel(BaseLanguage):
+class LanguageModel(BaseModel):
     id: int
+    name: str
 
     model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
+
+    @override
+    def __str__(self) -> str:
+        return self.name
 
     @override
     def __repr__(self) -> str:

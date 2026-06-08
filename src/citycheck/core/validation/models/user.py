@@ -17,7 +17,7 @@ def validate_email(u: object) -> str:
 ValidEmail = Annotated[str, BeforeValidator(validate_email)]
 
 
-class BaseUser(BaseModel):
+class UserCreate(BaseModel):
     username: str
     email: ValidEmail
     home_location_id: int | None = Field(default=None)
@@ -31,7 +31,7 @@ class BaseUser(BaseModel):
     @override
     def __repr__(self) -> str:
         return (
-            "BaseUser("
+            "UserCreate("
             f"username={repr(self.username)}, "
             f"email={repr(self.email)}, "
             f"home_location_id={repr(self.username)}"
@@ -39,13 +39,20 @@ class BaseUser(BaseModel):
         )
 
 
-class UserModel(BaseUser):
+class UserModel(BaseModel):
     id: int
+    username: str
+    email: ValidEmail
+    home_location_id: int | None = Field(default=None)
     home_location: LocationModel | None
 
     model_config: ClassVar[ConfigDict] = ConfigDict(
         from_attributes=True, arbitrary_types_allowed=True
     )
+
+    @override
+    def __str__(self) -> str:
+        return self.username
 
     @override
     def __repr__(self) -> str:

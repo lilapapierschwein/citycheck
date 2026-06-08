@@ -25,7 +25,7 @@ def validate_timezone(name: object) -> ZoneInfo:
 TimeZone = Annotated[ZoneInfo, BeforeValidator(validate_timezone)]
 
 
-class BaseLocation(BaseModel):
+class LocationCreate(BaseModel):
     name: str
     latitude: float
     longitude: float
@@ -41,7 +41,7 @@ class BaseLocation(BaseModel):
     @override
     def __repr__(self) -> str:
         return (
-            "BaseLocation("
+            "LocationCreate("
             f"name={repr(self.name)}, "
             f"latitude={repr(self.latitude)}, "
             f"longitude={repr(self.longitude)}, "
@@ -53,11 +53,22 @@ class BaseLocation(BaseModel):
         )
 
 
-class LocationModel(BaseLocation):
+class LocationModel(BaseModel):
     id: int
+    name: str
+    latitude: float
+    longitude: float
+    elevation: float
+    population: int
+    timezone: TimeZone
+    country_id: int
     country: CountryModel
 
     model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
+
+    @override
+    def __str__(self) -> str:
+        return self.name
 
     @override
     def __repr__(self) -> str:

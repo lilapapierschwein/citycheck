@@ -3,7 +3,7 @@ from typing import ClassVar, override
 from pydantic import BaseModel, ConfigDict
 
 
-class BaseRegion(BaseModel):
+class RegionCreate(BaseModel):
     name: str
 
     @override
@@ -12,13 +12,18 @@ class BaseRegion(BaseModel):
 
     @override
     def __repr__(self) -> str:
-        return f"Baseregion(name={self.name})"
+        return f"RegionCreate(name={self.name})"
 
 
-class RegionModel(BaseRegion):
+class RegionModel(BaseModel):
     id: int
+    name: str
 
-    medel_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
+    model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
+
+    @override
+    def __str__(self) -> str:
+        return self.name
 
     @override
     def __repr__(self) -> str:
@@ -28,7 +33,7 @@ class RegionModel(BaseRegion):
 class RegionSchema(RegionModel): ...
 
 
-class BaseSubregion(BaseModel):
+class SubregionCreate(BaseModel):
     name: str
     region_id: int
 
@@ -38,11 +43,14 @@ class BaseSubregion(BaseModel):
 
     @override
     def __repr__(self) -> str:
-        return f"{BaseSubregion}(name={self.name}, region_id={repr(self.region_id)})"
+        return f"SubregionCreate(name={self.name}, region_id={repr(self.region_id)})"
 
 
-class SubregionModel(BaseSubregion):
+class SubregionModel(BaseModel):
     id: int
+    name: str
+    region_id: int
+
     region: RegionModel
 
     model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)

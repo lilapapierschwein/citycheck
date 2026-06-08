@@ -10,12 +10,12 @@ import requests
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.sql import select
 
+from citycheck.api.crud import create_user, delete_user, read_user
 from citycheck.api.crud.location import read_location
-from citycheck.api.crud.user import create_user, delete_user, read_user
 from citycheck.core.requests.get import get_request
 from citycheck.core.requests.sources import SourceAPI
-from citycheck.core.validation.models.location import BaseLocation
-from citycheck.core.validation.models.user import BaseUser, UserModel
+from citycheck.core.validation.models.location import LocationCreate
+from citycheck.core.validation.models.user import UserCreate, UserModel
 from citycheck.db.db import init_db
 from citycheck.db.models import Country, Location, User
 
@@ -91,7 +91,7 @@ def run() -> None:
 
     # db = init_db()
     # with db.get_session() as Session:
-    #     # user = create_user(BaseUser(**testuser), Session)
+    #     # user = create_user(UserCreate(**testuser), Session)
     #
     #     try:
     #         user = read_user(1, Session)

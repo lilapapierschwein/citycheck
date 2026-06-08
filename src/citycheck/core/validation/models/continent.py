@@ -3,7 +3,7 @@ from typing import ClassVar, override
 from pydantic import BaseModel, ConfigDict
 
 
-class BaseContinent(BaseModel):
+class ContinentCreate(BaseModel):
     name: str
 
     @override
@@ -12,13 +12,18 @@ class BaseContinent(BaseModel):
 
     @override
     def __repr__(self) -> str:
-        return f"BaseContinent(name={repr(self.name)})"
+        return f"ContintentCreate(name={repr(self.name)})"
 
 
-class ContinentModel(BaseContinent):
+class ContinentModel(BaseModel):
     id: int
+    name: str
 
     model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
+
+    @override
+    def __str__(self) -> str:
+        return self.name
 
     @override
     def __repr__(self) -> str:

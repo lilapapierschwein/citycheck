@@ -1,28 +1,16 @@
-from pathlib import Path
-from typing import Annotated
 
 import uvicorn
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError, NoResultFound
-from sqlalchemy.orm import Session
 
 from citycheck.api import crud
 from citycheck.core.validation.models.user import BaseUser, UserModel, UserSchema
-from citycheck.db.db import DB
+from citycheck.settings import ROOT
+
+from .utils im import CR
 
 app = FastAPI()
-
-
-def get_session():
-    session = DB._session_factoy()  # pyright: ignore[reportPrivateUsage]
-    try:
-        yield session
-    finally:
-        session.close()
-
-
-SessionDep = Annotated[Session, Depends(get_session)]
 
 
 @app.get("/")
@@ -68,7 +56,7 @@ async def delete_user(user_id: int, session: SessionDep):
 def main() -> None:
     uvicorn.run(
         app="main:app",
-        app_dir=str(Path("/home/kelsa/Projects/citycheck/src/citycheck/api")),
+        app_dir=str(ROOT / "src" / "citycheck" / "api"),
         port=8000,
     )
 
