@@ -8,7 +8,7 @@ from citycheck.core.validation.models.region import BaseSubregion
 from citycheck.db.models import Subregion
 
 
-def create_region(data: BaseSubregion, session: Session) -> Subregion:
+async def create_subregion(data: BaseSubregion, session: Session) -> Subregion:
     subregion = Subregion(**data.model_dump())
 
     session.add(subregion)
@@ -17,7 +17,9 @@ def create_region(data: BaseSubregion, session: Session) -> Subregion:
     return subregion
 
 
-def create_regions(data: list[BaseSubregion], session: Session) -> list[Subregion]:
+async def create_subregions(
+    data: list[BaseSubregion], session: Session
+) -> list[Subregion]:
     subregions = [Subregion(**d.model_dump()) for d in data]
 
     session.add_all(subregions)
@@ -26,20 +28,20 @@ def create_regions(data: list[BaseSubregion], session: Session) -> list[Subregio
     return subregions
 
 
-def read_region(region_id: int, session: Session) -> Subregion:
+async def read_subregion(region_id: int, session: Session) -> Subregion:
     return session.get_one(Subregion, region_id)
 
 
-def read_regions(session: Session) -> Sequence[Subregion]:
+async def read_subregions(session: Session) -> Sequence[Subregion]:
     return session.scalars(select(Subregion)).all()
 
 
 # def update_region(region_id: int, session: Session) -> Subregion: ...
 
 
-def delete_region(region_id: int, session: Session) -> None:
+async def delete_subregion(region_id: int, session: Session) -> None:
     try:
-        subregion = read_region(1, session)
+        subregion = await read_subregion(1, session)
         session.delete(subregion)
         print(f"Subregion #{region_id} ({repr(subregion.name)}) deleted.")
         session.commit()

@@ -8,7 +8,7 @@ from citycheck.core.validation.models.currency import BaseCurrency
 from citycheck.db.models import Currency
 
 
-def create_currency(data: BaseCurrency, session: Session) -> Currency:
+async def create_currency(data: BaseCurrency, session: Session) -> Currency:
     currency = Currency(**data.model_dump())
 
     session.add(currency)
@@ -17,7 +17,9 @@ def create_currency(data: BaseCurrency, session: Session) -> Currency:
     return currency
 
 
-def create_currencies(data: list[BaseCurrency], session: Session) -> list[Currency]:
+async def create_currencies(
+    data: list[BaseCurrency], session: Session
+) -> list[Currency]:
     currencies = [Currency(**d.model_dump()) for d in data]
 
     session.add_all(currencies)
@@ -26,20 +28,20 @@ def create_currencies(data: list[BaseCurrency], session: Session) -> list[Curren
     return currencies
 
 
-def read_currency(currency_id: int, session: Session) -> Currency:
+async def read_currency(currency_id: int, session: Session) -> Currency:
     return session.get_one(Currency, currency_id)
 
 
-def read_currencies(session: Session) -> Sequence[Currency]:
+async def read_currencies(session: Session) -> Sequence[Currency]:
     return session.scalars(select(Currency)).all()
 
 
 # def update_currency(currency_id: int, session: Session) -> Currency: ...
 
 
-def delete_currency(currency_id: int, session: Session) -> None:
+async def delete_currency(currency_id: int, session: Session) -> None:
     try:
-        currency = read_currency(1, session)
+        currency = await read_currency(1, session)
         session.delete(currency)
         print(f"Currency #{currency_id} ({repr(currency.name)}) deleted.")
         session.commit()

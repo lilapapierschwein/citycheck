@@ -17,7 +17,7 @@ async def create_user(data: BaseUser, session: Session) -> User:
     return user
 
 
-def create_users(data: list[BaseUser], session: Session) -> list[User]:
+async def create_users(data: list[BaseUser], session: Session) -> list[User]:
     users = [User(**d.model_dump()) for d in data]
 
     session.add_all(users)
