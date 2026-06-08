@@ -1,14 +1,17 @@
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from citycheck.api import crud
-from citycheck.core.validation.models.user import BaseUser, UserModel, UserSchema
+from citycheck.core.validation.models.user import (
+    UserCreate,
+    UserModel,
+    UserSchema,
+)
 from citycheck.settings import ROOT
 
-from .utils im import CR
+from .utils import CRUDSession
 
 app = FastAPI()
 
@@ -19,7 +22,7 @@ async def get_root():
 
 
 @app.get("/users/{user_id}")
-async def get_user(user_id: int, session: SessionDep):
+async def get_user(user_id: int, session: CRUDSession):
     user = await crud.read_user(user_id, session)
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
@@ -28,7 +31,7 @@ async def get_user(user_id: int, session: SessionDep):
 
 
 @app.get("/users/")
-async def get_users(session: SessionDep):
+async def get_users(session: CRUDSession):
     users = await crud.read_users(session)
     if not users:
         raise HTTPException(status_code=404, detail="No users not found.")
@@ -36,7 +39,7 @@ async def get_users(session: SessionDep):
 
 
 @app.post("/users")
-async def post_user(user_data: BaseUser, session: SessionDep):
+async def post_user(user_data: UserCreate, session: CRUDSession):
     try:
         user = await crud.create_user(user_data, session)
         return user
@@ -45,7 +48,7 @@ async def post_user(user_data: BaseUser, session: SessionDep):
 
 
 @app.delete("/users/{user_id}")
-async def delete_user(user_id: int, session: SessionDep):
+async def delete_user(user_id: int, session: CRUDSession):
     try:
         await crud.delete_user(user_id, session)
         return {"status": "success"}

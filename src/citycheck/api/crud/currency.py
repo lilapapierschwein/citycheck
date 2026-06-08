@@ -4,11 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.currency import BaseCurrency
+from citycheck.core.validation.models.currency import CurrencyCreate
 from citycheck.db.models import Currency
 
 
-async def create_currency(data: BaseCurrency, session: Session) -> Currency:
+async def create_currency(data: CurrencyCreate, session: Session) -> Currency:
     currency = Currency(**data.model_dump())
 
     session.add(currency)
@@ -18,7 +18,7 @@ async def create_currency(data: BaseCurrency, session: Session) -> Currency:
 
 
 async def create_currencies(
-    data: list[BaseCurrency], session: Session
+    data: list[CurrencyCreate], session: Session
 ) -> list[Currency]:
     currencies = [Currency(**d.model_dump()) for d in data]
 

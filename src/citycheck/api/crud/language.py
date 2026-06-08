@@ -4,11 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.language import BaseLanguage
+from citycheck.core.validation.models.language import LanguageCreate
 from citycheck.db.models import Language
 
 
-async def create_language(data: BaseLanguage, session: Session) -> Language:
+async def create_language(data: LanguageCreate, session: Session) -> Language:
     language = Language(**data.model_dump())
 
     session.add(language)
@@ -18,7 +18,7 @@ async def create_language(data: BaseLanguage, session: Session) -> Language:
 
 
 async def create_languages(
-    data: list[BaseLanguage], session: Session
+    data: list[LanguageCreate], session: Session
 ) -> list[Language]:
     languages = [Language(**d.model_dump()) for d in data]
 

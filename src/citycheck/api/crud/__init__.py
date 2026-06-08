@@ -1,8 +1,8 @@
-from .contintent import create_continent as create_continent
-from .contintent import create_continents as create_continents
-from .contintent import delete_continent as delete_continent
-from .contintent import read_continent as read_continent
-from .contintent import read_continents as read_continents
+from .continent import create_continent as create_continent
+from .continent import create_continents as create_continents
+from .continent import delete_continent as delete_continent
+from .continent import read_continent as read_continent
+from .continent import read_continents as read_continents
 from .country import create_countries as create_countries
 from .country import create_country as create_country
 from .country import delete_country as delete_country

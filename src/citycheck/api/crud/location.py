@@ -4,11 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.location import BaseLocation
+from citycheck.core.validation.models.location import LocationCreate
 from citycheck.db.models import Location
 
 
-async def create_location(data: BaseLocation, session: Session) -> Location:
+async def create_location(data: LocationCreate, session: Session) -> Location:
     location = Location(**data.model_dump())
 
     session.add(location)
@@ -18,7 +18,7 @@ async def create_location(data: BaseLocation, session: Session) -> Location:
 
 
 async def create_locations(
-    data: list[BaseLocation], session: Session
+    data: list[LocationCreate], session: Session
 ) -> list[Location]:
     users = [Location(**d.model_dump()) for d in data]
 

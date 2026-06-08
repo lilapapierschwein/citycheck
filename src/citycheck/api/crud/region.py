@@ -4,11 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.region import BaseRegion
+from citycheck.core.validation.models.region import RegionCreate
 from citycheck.db.models import Region
 
 
-async def create_region(data: BaseRegion, session: Session) -> Region:
+async def create_region(data: RegionCreate, session: Session) -> Region:
     region = Region(**data.model_dump())
 
     session.add(region)
@@ -17,7 +17,7 @@ async def create_region(data: BaseRegion, session: Session) -> Region:
     return region
 
 
-async def create_regions(data: list[BaseRegion], session: Session) -> list[Region]:
+async def create_regions(data: list[RegionCreate], session: Session) -> list[Region]:
     users = [Region(**d.model_dump()) for d in data]
 
     session.add_all(users)

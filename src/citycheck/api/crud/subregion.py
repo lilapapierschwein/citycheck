@@ -4,11 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.region import BaseSubregion
+from citycheck.core.validation.models.region import SubregionCreate
 from citycheck.db.models import Subregion
 
 
-async def create_subregion(data: BaseSubregion, session: Session) -> Subregion:
+async def create_subregion(data: SubregionCreate, session: Session) -> Subregion:
     subregion = Subregion(**data.model_dump())
 
     session.add(subregion)
@@ -18,7 +18,7 @@ async def create_subregion(data: BaseSubregion, session: Session) -> Subregion:
 
 
 async def create_subregions(
-    data: list[BaseSubregion], session: Session
+    data: list[SubregionCreate], session: Session
 ) -> list[Subregion]:
     subregions = [Subregion(**d.model_dump()) for d in data]
 

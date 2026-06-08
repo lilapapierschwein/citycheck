@@ -4,11 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.user import BaseUser
+from citycheck.core.validation.models.user import UserCreate
 from citycheck.db.models import User
 
 
-async def create_user(data: BaseUser, session: Session) -> User:
+async def create_user(data: UserCreate, session: Session) -> User:
     user = User(**data.model_dump())
 
     session.add(user)
@@ -17,7 +17,7 @@ async def create_user(data: BaseUser, session: Session) -> User:
     return user
 
 
-async def create_users(data: list[BaseUser], session: Session) -> list[User]:
+async def create_users(data: list[UserCreate], session: Session) -> list[User]:
     users = [User(**d.model_dump()) for d in data]
 
     session.add_all(users)

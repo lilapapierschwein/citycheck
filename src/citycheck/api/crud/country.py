@@ -4,11 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.country import BaseCountry
+from citycheck.core.validation.models.country import CountryCreate
 from citycheck.db.models import Country
 
 
-async def create_country(data: BaseCountry, session: Session) -> Country:
+async def create_country(data: CountryCreate, session: Session) -> Country:
     country = Country(**data.model_dump())
 
     session.add(country)
@@ -17,7 +17,9 @@ async def create_country(data: BaseCountry, session: Session) -> Country:
     return country
 
 
-async def create_countries(data: list[BaseCountry], session: Session) -> list[Country]:
+async def create_countries(
+    data: list[CountryCreate], session: Session
+) -> list[Country]:
     users = [Country(**d.model_dump()) for d in data]
 
     session.add_all(users)

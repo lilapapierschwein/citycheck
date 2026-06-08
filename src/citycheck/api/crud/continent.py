@@ -4,11 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.continent import BaseContinent
+from citycheck.core.validation.models.continent import ContinentCreate
 from citycheck.db.models import Continent
 
 
-async def create_continent(data: BaseContinent, session: Session) -> Continent:
+async def create_continent(data: ContinentCreate, session: Session) -> Continent:
     continent = Continent(**data.model_dump())
 
     session.add(continent)
@@ -18,7 +18,7 @@ async def create_continent(data: BaseContinent, session: Session) -> Continent:
 
 
 async def create_continents(
-    data: list[BaseContinent], session: Session
+    data: list[ContinentCreate], session: Session
 ) -> list[Continent]:
     users = [Continent(**d.model_dump()) for d in data]
 
