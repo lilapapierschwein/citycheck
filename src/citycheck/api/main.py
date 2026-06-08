@@ -1,14 +1,13 @@
 from pathlib import Path
 from typing import Annotated
 
-from sqlalchemy.exc import IntegrityError, NoResultFound
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.exceptions import HTTPException
+from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.orm import Session
 
-from citycheck.core.crud.user import create_user, read_users
-from citycheck.core.crud.user import read_user as ru, delete_user as du
+from citycheck.api import crud
 from citycheck.core.validation.models.user import BaseUser, UserModel, UserSchema
 from citycheck.db.db import DB
 
@@ -33,7 +32,7 @@ async def get_root():
 
 @app.get("/users/{user_id}")
 async def get_user(user_id: int, session: SessionDep):
-    user = await ru(user_id, session)
+    user = await crud.read_user(user_id, session)
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
     user_model = UserModel.model_validate(user)
@@ -42,7 +41,7 @@ async def get_user(user_id: int, session: SessionDep):
 
 @app.get("/users/")
 async def get_users(session: SessionDep):
-    users = await read_users(session)
+    users = await crud.read_users(session)
     if not users:
         raise HTTPException(status_code=404, detail="No users not found.")
     return [UserSchema.model_validate(u) for u in users]
@@ -51,7 +50,7 @@ async def get_users(session: SessionDep):
 @app.post("/users")
 async def post_user(user_data: BaseUser, session: SessionDep):
     try:
-        user = await create_user(user_data, session)
+        user = await crud.create_user(user_data, session)
         return user
     except IntegrityError as err:
         return HTTPException(404, detail=err)
@@ -60,7 +59,7 @@ async def post_user(user_data: BaseUser, session: SessionDep):
 @app.delete("/users/{user_id}")
 async def delete_user(user_id: int, session: SessionDep):
     try:
-        await du(user_id, session)
+        await crud.delete_user(user_id, session)
         return {"status": "success"}
     except NoResultFound as err:
         return {"status", str(err)}

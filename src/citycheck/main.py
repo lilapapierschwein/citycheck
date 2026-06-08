@@ -10,8 +10,8 @@ import requests
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.sql import select
 
-from citycheck.core.crud.location import read_location
-from citycheck.core.crud.user import create_user, delete_user, read_user
+from citycheck.api.crud.location import read_location
+from citycheck.api.crud.user import create_user, delete_user, read_user
 from citycheck.core.requests.get import get_request
 from citycheck.core.requests.sources import SourceAPI
 from citycheck.core.validation.models.location import BaseLocation
