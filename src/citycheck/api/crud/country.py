@@ -4,7 +4,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.country import CountryCreate
+from citycheck.api.models.country import CountryCreate
 from citycheck.db.models import Country
 
 

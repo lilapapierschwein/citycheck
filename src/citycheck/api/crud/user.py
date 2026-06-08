@@ -4,7 +4,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.core.validation.models.user import UserCreate
+from citycheck.api.models.user import UserCreate
 from citycheck.db.models import User
 
 
