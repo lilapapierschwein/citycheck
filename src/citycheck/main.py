@@ -14,7 +14,7 @@ from citycheck.api.crud import create_user, delete_user, read_location, read_use
 from citycheck.api.models.location import LocationCreate
 from citycheck.api.models.user import UserCreate, UserModel
 from citycheck.core.requests.get import get_request
-from citycheck.core.requests.sources import SourceAPI
+from citycheck.core.requests.sources import RESTCOUNTRIES_API_CODE, SourceAPI
 from citycheck.db.db import init_db
 from citycheck.db.models import Country, Location, User
 
@@ -35,7 +35,7 @@ def get_country_data(code: str) -> Any:
     try:
         if len(code) != 2:
             raise ValueError("Country code must be consist of 2 characters.")
-        response = requests.get(f"https://restcountries.com/v3.1/alpha/{code}")
+        response = get_request(api=RESTCOUNTRIES_API_CODE, uid=code)
         if response.status_code != 200:
             response.raise_for_status()
         country_data = response.json()
@@ -45,31 +45,12 @@ def get_country_data(code: str) -> Any:
 
 
 def run() -> None:
-    db = init_db()
 
-    with db.get_session() as Session:
-        geocoding_api = SourceAPI("https://geocoding-api.open-meteo.com", "1", "search")
-        loc_data: dict[str, Any] = get_location_data("Leipzig", geocoding_api)[0]
-        name: str = loc_data["name"]
+    de = get_request(RESTCOUNTRIES_API_CODE, uid="de")[0]
+    pprint(de["translations"]["deu"])
 
-        loc_db = Session.scalar(select(Location).where(Location.name == name))
-        # if not in db, create a new one
-        if loc_db is not None:
-            print(loc_db)
-            return None
-
-        # check if country is stored first
-        country_code: str = loc_data["country_code"]
-        country_db = Session.scalar(select(Country).where(Country.code == country_code))
-        if country_db is not None:
-            print(country_db)
-            return None
-
-        country_data = get_country_data(country_code)
-        pprint(country_data)
-
-        # loc = BaseLocation.model_validate(loc_data)
-        # pprint(loc)
+    # loc = BaseLocation.model_validate(loc_data)
+    # pprint(loc)
     # de = get_country_data("de")
     # pprint(de[0]["translations"]["deu"], indent=2, sort_dicts=False)
 
