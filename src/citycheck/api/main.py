@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
 from citycheck.api.routers import (
     continents_router,
@@ -13,9 +13,9 @@ from citycheck.api.routers import (
 )
 from citycheck.settings import ROOT
 
-app = FastAPI()
+APP_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 
-for router in [
+ROUTERS = [
     continents_router,
     countries_router,
     currencies_router,
@@ -24,8 +24,19 @@ for router in [
     regions_router,
     subregions_router,
     users_router,
-]:
-    app.include_router(router)
+]
+
+
+def get_app(
+    routers: list[APIRouter], title: str = "citycheck", version: str = "0.1.0"
+) -> FastAPI:
+    app = FastAPI(title=title, version=version)
+    for router in routers:
+        app.include_router(router)
+    return app
+
+
+app = get_app(ROUTERS, **APP_CONFIG)
 
 
 @app.get("/")
