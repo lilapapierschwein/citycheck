@@ -44,4 +44,4 @@ async def delete_language(language_id: int, session: CRUDSession):
         await crud.delete_language(language_id, session)
         return {"status": "success"}
     except NoResultFound as err:
-        return {"status", str(err)}
+        return {"status": str(err)}

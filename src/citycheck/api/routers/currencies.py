@@ -22,7 +22,7 @@ async def get_currencies(session: CRUDSession):
     currencies = await crud.read_currencies(session)
     if not currencies:
         raise HTTPException(status_code=404, detail="No currencies found.")
-    return [CurrencySchema.model_validate(lang) for lang in currencies]
+    return [CurrencySchema.model_validate(c) for c in currencies]
 
 
 @router.post("")
@@ -41,4 +41,4 @@ async def delete_currency(currency_id: int, session: CRUDSession):
         await crud.delete_language(currency_id, session)
         return {"status": "success"}
     except NoResultFound as err:
-        return {"status", str(err)}
+        return {"status": str(err)}

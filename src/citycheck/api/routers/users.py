@@ -44,4 +44,4 @@ async def delete_user(user_id: int, session: CRUDSession):
         await crud.delete_user(user_id, session)
         return {"status": "success"}
     except NoResultFound as err:
-        return {"status", str(err)}
+        return {"status": str(err)}

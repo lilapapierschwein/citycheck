@@ -85,4 +85,4 @@ async def delete_user(region_id: int, session: CRUDSession):
         await crud.delete_region(region_id, session)
         return {"status": "success"}
     except NoResultFound as err:
-        return {"status", str(err)}
+        return {"status": str(err)}

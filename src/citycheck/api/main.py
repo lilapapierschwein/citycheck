@@ -2,8 +2,11 @@ import uvicorn
 from fastapi import FastAPI
 
 from citycheck.api.routers import (
+    continents_router,
+    countries_router,
     currencies_router,
     languages_router,
+    locations_router,
     regions_router,
     subregions_router,
     users_router,
@@ -13,11 +16,14 @@ from citycheck.settings import ROOT
 app = FastAPI()
 
 for router in [
-    users_router,
+    continents_router,
+    countries_router,
+    currencies_router,
+    languages_router,
+    locations_router,
     regions_router,
     subregions_router,
-    languages_router,
-    currencies_router,
+    users_router,
 ]:
     app.include_router(router)
 
