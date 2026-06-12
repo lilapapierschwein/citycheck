@@ -2,10 +2,11 @@ from collections.abc import Sequence
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import select
+from sqlalchemy.sql import func, select
 
+from citycheck.api.filters_forms import CountryQueryFilters
 from citycheck.api.models.country import CountryCreate
-from citycheck.db.models import Country
+from citycheck.db.models import Country, Currency, Language, Region, Subregion
 
 
 async def create_country(data: CountryCreate, session: Session) -> Country:
@@ -32,8 +33,34 @@ async def read_country(contry_id: int, session: Session) -> Country:
     return session.get_one(Country, contry_id)
 
 
-async def read_countries(session: Session) -> Sequence[Country]:
-    return session.scalars(select(Country)).all()
+async def read_countries(
+    session: Session, filters: CountryQueryFilters
+) -> Sequence[Country]:
+    stmt = select(Country)
+
+    if filters.name:
+        stmt = stmt.where(func.lower(Country.name) == filters.name.lower())
+    if filters.code:
+        stmt = stmt.where(func.lower(Country.code) == filters.code.lower())
+    if filters.currency:
+        stmt = stmt.join(Currency).where(
+            Currency.name.ilike(f"%{filters.currency.lower()}%")
+        )
+    if filters.language:
+        stmt = stmt.join(Language).where(
+            func.lower(Language.name) == filters.language.lower()
+        )
+    if filters.region:
+        stmt = stmt.join(Region).where(
+            func.lower(Region.name) == filters.region.lower()
+        )
+    if filters.subregion:
+        stmt = stmt.join(Subregion).where(
+            func.lower(Subregion.name) == filters.subregion.lower()
+        )
+    stmt = stmt.limit(filters.limit).offset(filters.offset)
+
+    return session.scalars(stmt).all()
 
 
 # def update_country(contry_id: int, session: Session) -> Country: ...
