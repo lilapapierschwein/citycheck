@@ -15,7 +15,7 @@ class CountryCreate(BaseModel):
     tld: str
     googlemaps: str
     openstreetmaps: str
-    subregion_id: int
+    subregion_id: int | None
 
     @override
     def __str__(self) -> str:
@@ -50,8 +50,8 @@ class CountryModel(BaseModel):
     tld: str
     googlemaps: str
     openstreetmaps: str
-    subregion_id: int
-    subregion: SubregionModel
+    subregion_id: int | None
+    subregion: SubregionModel | None
 
     model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
 

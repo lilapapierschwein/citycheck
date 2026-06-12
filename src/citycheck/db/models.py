@@ -162,16 +162,15 @@ class Currency(Base):
     id: Mapped[int] = mapped_column(
         "currency_id", INTEGER, primary_key=True, autoincrement=True
     )
+    code: Mapped[str] = mapped_column("code", VARCHAR(3), unique=True, nullable=False)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
-    symbol: Mapped[str] = mapped_column(
-        "code", VARCHAR(10), unique=True, nullable=False
-    )
+    symbol: Mapped[str] = mapped_column("symbol", VARCHAR(10), nullable=False)
 
     countries: Mapped[list[Country]] = relationship(back_populates="currency")
 
     @override
     def __str__(self) -> str:
-        return self.name
+        return f"{self.symbol} ({self.name}, {self.code})"
 
     @override
     def __repr__(self) -> str:
@@ -189,7 +188,7 @@ class Country(Base):
     official_name: Mapped[str] = mapped_column(
         "official_name", VARCHAR(255), unique=True, nullable=False
     )
-    code: Mapped[str] = mapped_column("code", VARCHAR(2), unique=True, nullable=False)
+    code: Mapped[str] = mapped_column("code", VARCHAR(2), nullable=False)
     area: Mapped[float] = mapped_column("area", REAL, nullable=False)
     tld: Mapped[str] = mapped_column("tld", VARCHAR(10), nullable=False)
     flag: Mapped[str] = mapped_column("flag", VARCHAR(10), nullable=False)
@@ -210,11 +209,13 @@ class Country(Base):
     language: Mapped[Language] = relationship(back_populates="countries")
     googlemaps: Mapped[str] = mapped_column("googlemaps", TEXT, nullable=False)
     openstreetmaps: Mapped[str] = mapped_column("openstreetmaps", TEXT, nullable=False)
-    subregion_id: Mapped[int] = mapped_column(
+    subregion_id: Mapped[int | None] = mapped_column(
         "subregion_id",
         INTEGER,
         ForeignKey("subregions.subregion_id", onupdate="CASCADE", ondelete="RESTRICT"),
-        nullable=False,
+        nullable=True,
+        default=None,
+        server_default=sql.text("null"),
     )
     subregion: Mapped[Subregion] = relationship(back_populates="countries")
     locations: Mapped[list[Location]] = relationship(back_populates="country")
