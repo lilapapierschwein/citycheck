@@ -69,4 +69,4 @@ class SubregionModel(BaseModel):
 class SubregionSchema(SubregionModel):
     @model_serializer
     def serialize_model(self):
-        return {"id": self.id, "name": self.name, "region": self.region}
+        return {"id": self.id, "name": self.name}

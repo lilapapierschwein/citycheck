@@ -87,6 +87,7 @@ name = "citycheck"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
+    { name = "colorama" },
     { name = "fastapi", extra = ["standard"] },
     { name = "pydantic" },
     { name = "requests" },
@@ -96,6 +97,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "colorama", specifier = ">=0.4.6" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.136.3" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "requests", specifier = ">=2.34.2" },

@@ -5,6 +5,8 @@ from typing import override
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from citycheck.settings import DB_FILE
+
 from .models import Base
 
 
@@ -43,9 +45,6 @@ class SqliteDB:
         if create:
             self._create_metadata()
         return None
-
-
-DB_FILE = Path("citycheck.db")
 
 
 def init_db(db_file: Path = DB_FILE) -> SqliteDB:

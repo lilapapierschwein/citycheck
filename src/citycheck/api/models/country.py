@@ -112,5 +112,5 @@ class CountrySchema(CountryModel):
             "tld": self.tld,
             "googlemaps": self.googlemaps,
             "openstreetmaps": self.openstreetmaps,
-            "subregion": self.subregion,
+            "regions": {"region": self.region, "subregion": self.subregion},
         }

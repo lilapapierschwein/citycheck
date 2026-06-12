@@ -17,7 +17,8 @@ from citycheck.api.models.continent import ContinentCreate
 from citycheck.api.models.location import LocationCreate
 from citycheck.api.models.user import UserCreate, UserModel
 from citycheck.core.requests.get import get_request
-from citycheck.core.requests.sources import RESTCOUNTRIES_API_CODE, SourceAPI
+from citycheck.core.requests.sources import SourceAPI
+from citycheck.core.setup import insert_initial_data
 from citycheck.core.utils import load_json
 from citycheck.db.db import SqliteDB, init_db
 from citycheck.db.models import (
@@ -30,7 +31,7 @@ from citycheck.db.models import (
     Subregion,
     User,
 )
-from citycheck.settings import ROOT
+from citycheck.settings import DATA_DIR, ROOT
 
 
 def get_location_data(name: str, api: SourceAPI) -> Any:
@@ -198,11 +199,12 @@ def run() -> None:
 
     db = init_db()
     with db.get_session() as Session:
-        insert_continents(ROOT / "continents.json", Session)
-        insert_regions_subregions(ROOT / "subregions.json", Session)
-        insert_languages(ROOT / "languages.json", Session)
-        insert_currencies(ROOT / "currencies.json", Session)
-        insert_countries(ROOT / "countries.json", Session)
+        insert_initial_data(DATA_DIR / "initial_data.json", Session)
+        # insert_continents(ROOT / "continents.json", Session)
+        # insert_regions_subregions(ROOT / "subregions.json", Session)
+        # insert_languages(ROOT / "languages.json", Session)
+        # insert_currencies(ROOT / "currencies.json", Session)
+        # insert_countries(ROOT / "countries.json", Session)
     #
     #     try:
     #         user = read_user(1, Session)
