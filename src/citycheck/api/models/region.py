@@ -1,6 +1,6 @@
 from typing import ClassVar, override
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_serializer
 
 
 class RegionCreate(BaseModel):
@@ -66,4 +66,7 @@ class SubregionModel(BaseModel):
         )
 
 
-class SubregionSchema(SubregionModel): ...
+class SubregionSchema(SubregionModel):
+    @model_serializer
+    def serialize_model(self):
+        return {"id": self.id, "name": self.name, "region": self.region}

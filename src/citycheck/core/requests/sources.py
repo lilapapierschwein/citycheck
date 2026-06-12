@@ -18,6 +18,3 @@ HISTORICAL_WEATHER_API = SourceAPI("https://archive-api.open-meteo.com", "1", "a
 SEASONAL_FORECAST_API = SourceAPI(
     "https://seasonal-api.open-meteo.com", "1", "seasonal"
 )
-
-RESTCOUNTRIES_API_NAME = SourceAPI("https://restcountries.com", "3.1", "name")
-RESTCOUNTRIES_API_CODE = SourceAPI("https://restcountries.com", "3.1", "alpha")

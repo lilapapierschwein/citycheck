@@ -1,8 +1,11 @@
 from typing import ClassVar, override
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, computed_field, model_serializer
 
-from .region import SubregionModel
+from citycheck.api.models.currency import CurrencyModel
+from citycheck.api.models.language import LanguageModel
+
+from .region import RegionModel, SubregionSchema
 
 
 class CountryCreate(BaseModel):
@@ -12,6 +15,8 @@ class CountryCreate(BaseModel):
     flag: str
     area: float
     population: int
+    currency_id: int
+    language_id: int
     tld: str
     googlemaps: str
     openstreetmaps: str
@@ -47,11 +52,15 @@ class CountryModel(BaseModel):
     flag: str
     area: float
     population: int
+    currency_id: int
+    currency: CurrencyModel
+    language_id: int
+    language: LanguageModel
     tld: str
     googlemaps: str
     openstreetmaps: str
     subregion_id: int | None
-    subregion: SubregionModel | None
+    subregion: SubregionSchema | None
 
     model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
 
@@ -70,6 +79,8 @@ class CountryModel(BaseModel):
             f"flag={repr(self.flag)}, "
             f"area={repr(self.area)}, "
             f"population={repr(self.population)}, "
+            f"currency_id={repr(self.currency_id)}, "
+            f"language={repr(self.language_id)}, "
             f"tld={repr(self.tld)}, "
             f"googlemaps={repr(self.googlemaps)}, "
             f"openstreetmaps={repr(self.openstreetmaps)}, "
@@ -77,5 +88,29 @@ class CountryModel(BaseModel):
             ")"
         )
 
+    @computed_field
+    @property
+    def region(self) -> RegionModel | None:
+        if self.subregion is None:
+            return None
+        return self.subregion.region
 
-class CountrySchema(CountryModel): ...
+
+class CountrySchema(CountryModel):
+    @model_serializer
+    def serialize_model(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "official_name": self.official_name,
+            "code": self.code,
+            "flag": self.flag,
+            "area": self.area,
+            "population": self.population,
+            "currency": self.currency,
+            "language": self.language,
+            "tld": self.tld,
+            "googlemaps": self.googlemaps,
+            "openstreetmaps": self.openstreetmaps,
+            "subregion": self.subregion,
+        }

@@ -17,11 +17,13 @@ class User(Base):
     """Represents a user of the application.
 
     Attributes:
-        id (int): The unique identifier of the user.
-        username (str): The username of the user.
-        email (str): The email address of the user.
-        home_location_id (int | None): The foreign key referencing the user's home location.
-        home_location (Location | None): The relationship to the user's home location.
+        id (`int`): The unique identifier of the user.
+        username (`str`): The username of the user.
+        email (`str`): The email address of the user.
+        home_location_id (`int | None`): The foreign key referencing the user's home location.
+
+    Relationships:
+        home_location (`Location | None`): The relationship to the user's home location.
     """
 
     __tablename__ = "users"
@@ -63,6 +65,13 @@ class User(Base):
 
 @final
 class Continent(Base):
+    """Represents a continent.
+
+    Attributes:
+        id (`int`): The unique identifier of the continent.
+        name (`str`): The name of the continent.
+    """
+
     __tablename__ = "continents"
 
     id: Mapped[int] = mapped_column(
@@ -81,6 +90,17 @@ class Continent(Base):
 
 @final
 class Region(Base):
+    """Represents a region.
+
+    Attributes:
+        id (`int`): The unique identifier of the region.
+        name (`str`): The name of the region.
+
+    Relationships:
+        subregions (list[`:class:Subregion`]): The list of subregions into which
+                                      this region is divided.
+    """
+
     __tablename__ = "regions"
 
     id: Mapped[int] = mapped_column(
@@ -105,6 +125,18 @@ class Region(Base):
 
 @final
 class Subregion(Base):
+    """Represents a subregion.
+
+    Attributes:
+        id (`int`): The unique identifier of the subregion.
+        name (`str`): The name of the subregion.
+        region_id (`int`): The foreign key referencing the parent region.
+
+    Relationships:
+        region (`:class:Region`): The relationship to the parent region.
+        countries (list[`:class:Country`]): The list of countries in this subregion.
+    """
+
     __tablename__ = "subregions"
 
     id: Mapped[int] = mapped_column(
@@ -137,6 +169,16 @@ class Subregion(Base):
 
 @final
 class Language(Base):
+    """Represents a language.
+
+    Attributes:
+        id (`int`): The unique identifier of the language.
+        name (`str`): The name of the language.
+
+    Relationships:
+        countries (list[`:class:Country`]): The list of countries that speak this language.
+    """
+
     __tablename__ = "languages"
 
     id: Mapped[int] = mapped_column(
@@ -157,6 +199,18 @@ class Language(Base):
 
 @final
 class Currency(Base):
+    """Represents a currency.
+
+    Attributes:
+        id (`int`): The unique identifier of the currency.
+        code (`str`): The ISO 4217 code of the currency.
+        name (`str`): The name of the currency.
+        symbol (`str`): The symbol of the currency.
+
+    Relationships:
+        countries (list[`:class:Country`]): The list of countries that use this currency.
+    """
+
     __tablename__ = "currencies"
 
     id: Mapped[int] = mapped_column(
@@ -179,6 +233,30 @@ class Currency(Base):
 
 @final
 class Country(Base):
+    """Represents a country.
+
+    Attributes:
+        id (`int`): The unique identifier of the country.
+        name (`str`): The common name of the country.
+        official_name (`str`): The official name of the country.
+        code (`str`): The ISO 3166-1 alpha-2 code of the country.
+        area (`float`): The total area of the country in square kilometers.
+        tld (`str`): The top-level domain of the country.
+        flag (`str`): The emoji flag of the country.
+        population (`int`): The population of the country.
+        currency_id (`int`): The foreign key referencing the country's currency.
+        language_id (`int`): The foreign key referencing the country's primary language.
+        googlemaps (`str`): The URL to the country's location on Google Maps.
+        openstreetmaps (`str`): The URL to the country's location on OpenStreetMap.
+        subregion_id (`int | None`): The foreign key referencing the country's subregion.
+
+    Relationships:
+        currency (`:class:Currency`): The relationship to the country's currency.
+        language (`:class:Language`): The relationship to the country's primary language.
+        subregion (`:class:Subregion | None`): The relationship to the country's subregion.
+        locations (list[`:class:Location`]): The list of locations stored for this country.
+    """
+
     __tablename__ = "countries"
 
     id: Mapped[int] = mapped_column(
@@ -248,6 +326,23 @@ class Country(Base):
 
 @final
 class Location(Base):
+    """Represents a location stored by a user.
+
+    Attributes:
+        id (`int`): The unique identifier of the location.
+        name (`str`): The name of the location.
+        latitude (`float`): The latitude of the location.
+        longitude (`float`): The longitude of the location.
+        elevation (`float`): The elevation of the location in meters.
+        population (`int`): The population of the location.
+        timezone (`ZoneInfo`): The timezone of the location.
+        country_id (`int`): The foreign key referencing the country of the location.
+
+    Relationships:
+        country (`:class:Country`): The relationship to the country of the location.
+        users (list[`:class:User`]): The list of users who have this location stored.
+    """
+
     __tablename__ = "locations"
 
     id: Mapped[int] = mapped_column(
