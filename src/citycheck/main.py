@@ -17,7 +17,7 @@ from citycheck.api.models.continent import ContinentCreate
 from citycheck.api.models.location import LocationCreate
 from citycheck.api.models.user import UserCreate, UserModel
 from citycheck.core.requests.get import get_request
-from citycheck.core.requests.sources import SourceAPI
+from citycheck.core.requests.sources import GEOCODING_API, SourceAPI
 from citycheck.core.setup import insert_initial_data
 from citycheck.core.utils import load_json
 from citycheck.db.db import SqliteDB, init_db
@@ -173,6 +173,28 @@ def insert_countries(file: Path, session: Session) -> None:
         print(f"country inserted: [#{country.id}] {country}")
 
 
+def save_location(data: dict[str, Any], session: Session) -> None:
+    country_code = str(data["country_code"])
+    country = session.scalar(select(Country).where(Country.code == country_code))
+    if not country:
+        raise LookupError(f"No country found for code {repr(country_code)}")
+
+    location_data = {
+        "name": str(data["name"]),
+        "latitude": float(data["latitude"]),
+        "longitude": float(data["longitude"]),
+        "elevation": float(data["elevation"]),
+        "population": int(data["population"]),
+        "timezone": str(data["timezone"]),
+        "country_id": country.id,
+    }
+    location_create = LocationCreate.model_validate(location_data)
+    location = Location(**location_create.model_dump())
+    session.add(location)
+    session.commit()
+    print("location created:", location)
+
+
 def run() -> None:
     # de = get_request(RESTCOUNTRIES_API_CODE, uid="de")[0]
     # pprint(de["translations"]["deu"])
@@ -182,9 +204,11 @@ def run() -> None:
     # de = get_country_data("de")
     # pprint(de[0]["translations"]["deu"], indent=2, sort_dicts=False)
 
-    # api = API("https://geocoding-api.open-meteo.com", 1, "search")
-    # le_data: list[dict[str, Any]] = get_location_data("Leipzig", api)
-    # pprint(le_data, sort_dicts=False)
+    api = GEOCODING_API
+    le_data: list[dict[str, Any]] = get_location_data("Leipzig", api)
+    le = le_data[0]
+
+    pprint(le_data, sort_dicts=False)
     #
     # le = le_data[0]
     # print(le["country_code"])
@@ -199,7 +223,8 @@ def run() -> None:
 
     db = init_db()
     with db.get_session() as Session:
-        insert_initial_data(DATA_DIR / "initial_data.json", Session)
+        save_location(le, Session)
+        # insert_initial_data(DATA_DIR / "initial_data.json", Session)
         # insert_continents(ROOT / "continents.json", Session)
         # insert_regions_subregions(ROOT / "subregions.json", Session)
         # insert_languages(ROOT / "languages.json", Session)
