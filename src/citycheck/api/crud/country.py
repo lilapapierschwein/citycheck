@@ -50,14 +50,12 @@ async def read_countries(
         stmt = stmt.join(Language).where(
             func.lower(Language.name) == filters.language.lower()
         )
-    if filters.region:
-        stmt = stmt.join(Region).where(
-            func.lower(Region.name) == filters.region.lower()
-        )
+    if filters.subregion or filters.region:
+        stmt = stmt.join(Subregion)
     if filters.subregion:
-        stmt = stmt.join(Subregion).where(
-            func.lower(Subregion.name) == filters.subregion.lower()
-        )
+        stmt = stmt.where(func.lower(Subregion.name) == filters.subregion.lower())
+    if filters.region:
+        stmt = stmt.join(Region).where(func.lower(Region.name) == filters.region.lower())
     stmt = stmt.limit(filters.limit).offset(filters.offset)
 
     return session.scalars(stmt).all()
@@ -68,7 +66,7 @@ async def read_countries(
 
 async def delete_country(contry_id: int, session: Session) -> None:
     try:
-        country = await read_country(1, session)
+        country = await read_country(contry_id, session)
         session.delete(country)
         print(f"Country #{contry_id} ({repr(country.name)}) deleted.")
         session.commit()

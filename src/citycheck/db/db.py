@@ -16,7 +16,7 @@ class SqliteDB:
         self.engine: Engine = create_engine(f"sqlite:///{self.file}")
 
         self._base: type[Base] = Base
-        self._session_factoy: sessionmaker[Session] = sessionmaker(self.engine)
+        self._session_factory: sessionmaker[Session] = sessionmaker(self.engine)
 
         self.Session: Generator[Session] = self._create_session_generator()
 

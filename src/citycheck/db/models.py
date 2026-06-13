@@ -2,7 +2,7 @@ from typing import final, override
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import sql
-from sqlalchemy.dialects.sqlite import INTEGER, REAL, TEXT, VARCHAR
+from sqlalchemy.dialects.sqlite import BOOLEAN, INTEGER, REAL, TEXT, VARCHAR
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.orm.properties import ForeignKey
 
@@ -45,7 +45,8 @@ class User(Base):
         default=None,
         server_default=sql.text("null"),
     )
-    home_location: Mapped[Location | None] = relationship(back_populates="users")
+    home_location: Mapped[Location | None] = relationship(back_populates="users_homes")
+    user_locations: Mapped[list[UserLocation]] = relationship(back_populates="user")
 
     @override
     def __str__(self) -> str:
@@ -61,6 +62,14 @@ class User(Base):
             f"home_location_id={repr(self.home_location_id)}"
             ")"
         )
+
+    @property
+    def locations(self) -> list[Location]:
+        return [loc.location for loc in self.user_locations]
+
+    @property
+    def favorites(self) -> list[Location]:
+        return [loc.location for loc in self.user_locations if loc.is_favorite]
 
 
 @final
@@ -371,7 +380,10 @@ class Location(Base):
         nullable=False,
     )
     country: Mapped[Country] = relationship(back_populates="locations")
-    users: Mapped[list[User]] = relationship(back_populates="home_location")
+    users_homes: Mapped[list[User]] = relationship(back_populates="home_location")
+    users_locations: Mapped[list[UserLocation]] = relationship(
+        back_populates="location"
+    )
 
     @override
     def __str__(self) -> str:
@@ -391,3 +403,43 @@ class Location(Base):
             f"country_id={repr(self.country_id)}"
             ")"
         )
+
+
+@final
+class UserLocation(Base):
+    __tablename__ = "users_locations"
+
+    id: Mapped[int] = mapped_column(
+        "user_location_id", INTEGER, primary_key=True, autoincrement=True
+    )
+    user_id: Mapped[int] = mapped_column(
+        "user_id",
+        INTEGER,
+        ForeignKey(
+            "users.user_id",
+            onupdate="CASCADE",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
+    user: Mapped[User] = relationship(back_populates="user_locations")
+
+    location_id: Mapped[int] = mapped_column(
+        "location_id",
+        INTEGER,
+        ForeignKey(
+            "locations.location_id",
+            onupdate="CASCADE",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
+    location: Mapped[Location] = relationship(back_populates="users_locations")
+
+    is_favorite: Mapped[bool] = mapped_column(
+        "is_favorite",
+        BOOLEAN,
+        nullable=False,
+        default=False,
+        server_default=sql.text("0"),
+    )

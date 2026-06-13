@@ -7,7 +7,7 @@ from citycheck.db.db import DB
 
 
 def get_session():
-    session = DB._session_factoy()  # pyright: ignore[reportPrivateUsage]
+    session = DB._session_factory()  # pyright: ignore[reportPrivateUsage]
     try:
         yield session
     finally:
@@ -26,7 +26,7 @@ HxReq = Annotated[bool, Depends(is_hx_request)]
 
 
 def is_web_request(request: Request) -> bool:
-    return "application/json" not in request.headers["accept"].split()
+    return "application/json" not in request.headers.get("accept", "").split()
 
 
 WebReq = Annotated[bool, Depends(is_web_request)]
