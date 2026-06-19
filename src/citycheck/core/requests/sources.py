@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from citycheck.core.utils import get_env_var
+from citycheck.settings import DOTENV_FILE
 
 
 @dataclass
@@ -34,13 +35,11 @@ class APIAuth:
 GEOCODING_API = SourceAPI("https://geocoding-api.open-meteo.com", "1", "search")
 FORECAST_API = SourceAPI("https://api.open-meteo.com", "1", "forecast")
 HISTORICAL_WEATHER_API = SourceAPI("https://archive-api.open-meteo.com", "1", "archive")
-SEASONAL_FORECAST_API = SourceAPI(
-    "https://seasonal-api.open-meteo.com", "1", "seasonal"
-)
+SEASONAL_FORECAST_API = SourceAPI("https://seasonal-api.open-meteo.com", "1", "seasonal")
 
 RESTCOUNTRIES_API = SourceAPI("https://api.restcountries.com/countries", "5")
 
-rc_api_token = get_env_var("RESTCOUNTRIES_API_KEY")
+rc_api_token = get_env_var("RESTCOUNTRIES_API_KEY", DOTENV_FILE)
 if not rc_api_token:
     raise RuntimeError("Unable to retreive restcountries api token")
 RESTCOUNTRIES_API_AUTH = APIAuth(token=rc_api_token)
