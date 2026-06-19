@@ -20,6 +20,8 @@ class User(Base):
         id (`int`): The unique identifier of the user.
         username (`str`): The username of the user.
         email (`str`): The email address of the user.
+        is_disabled (`bool`): ...
+        is_deleted (`bool`): ...
         home_location_id (`int | None`): The foreign key referencing the user's home location.
 
     Relationships:
@@ -28,14 +30,22 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(
-        "user_id", INTEGER, primary_key=True, autoincrement=True
+    id: Mapped[int] = mapped_column("user_id", INTEGER, primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column("username", VARCHAR(255), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column("email", VARCHAR(255), unique=True, nullable=False)
+    is_disabled: Mapped[bool] = mapped_column(
+        "is_disabled",
+        BOOLEAN,
+        default=False,
+        server_default=sql.text("0"),
+        nullable=False,
     )
-    username: Mapped[str] = mapped_column(
-        "username", VARCHAR(255), unique=True, nullable=False
-    )
-    email: Mapped[str] = mapped_column(
-        "email", VARCHAR(255), unique=True, nullable=False
+    is_deleted: Mapped[bool] = mapped_column(
+        "is_deleted",
+        BOOLEAN,
+        default=False,
+        server_default=sql.text("0"),
+        nullable=False,
     )
     home_location_id: Mapped[int | None] = mapped_column(
         "home_location_id",
@@ -47,6 +57,7 @@ class User(Base):
     )
     home_location: Mapped[Location | None] = relationship(back_populates="users_homes")
     user_locations: Mapped[list[UserLocation]] = relationship(back_populates="user")
+    # passwords_hashes: Mapped[list[UserPassword]] = relationship(back_populates="user")
 
     @override
     def __str__(self) -> str:
@@ -59,9 +70,15 @@ class User(Base):
             f"id={repr(self.id)}, "
             f"username={repr(self.username)}, "
             f"email={repr(self.email)}, "
+            f"is_disabled={repr(self.is_disabled)}, "
+            f"is_deleted={repr(self.is_deleted)}, "
             f"home_location_id={repr(self.home_location_id)}"
             ")"
         )
+
+    @property
+    def is_active(self) -> bool:
+        return not self.is_disabled and not self.is_deleted
 
     @property
     def locations(self) -> list[Location]:
@@ -70,6 +87,17 @@ class User(Base):
     @property
     def favorites(self) -> list[Location]:
         return [loc.location for loc in self.user_locations if loc.is_favorite]
+
+    # @property
+    # def current_password(self) -> UserPassword:
+    #     passwd_hashes_active = [upw for upw in self.passwords_hashes if upw.is_valid]
+    #     if not passwd_hashes_active:
+    #         raise LookupError(f"No valid password found for user#{self.id}")
+    #     elif len(passwd_hashes_active) > 1:
+    #         raise LookupError(
+    #             f"Too many valid passwords found for user#{self.id} ({len(passwd_hashes_active)})"
+    #         )
+    #     return passwd_hashes_active[0]
 
 
 country_continent = Table(
@@ -105,14 +133,10 @@ class Continent(Base):
 
     __tablename__ = "continents"
 
-    id: Mapped[int] = mapped_column(
-        "continent_id", INTEGER, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column("continent_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
 
-    countries: Mapped[list[Country]] = relationship(
-        secondary=country_continent, back_populates="continents"
-    )
+    countries: Mapped[list[Country]] = relationship(secondary=country_continent, back_populates="continents")
 
     @override
     def __str__(self) -> str:
@@ -138,9 +162,7 @@ class Region(Base):
 
     __tablename__ = "regions"
 
-    id: Mapped[int] = mapped_column(
-        "region_id", INTEGER, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column("region_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
     subregions: Mapped[list[Subregion]] = relationship(back_populates="region")
 
@@ -153,9 +175,7 @@ class Region(Base):
         return f"Region(id={repr(self.id)}, name={repr(self.name)})"
 
     def get_countries(self) -> list[Country]:
-        return [
-            country for subregion in self.subregions for country in subregion.countries
-        ]
+        return [country for subregion in self.subregions for country in subregion.countries]
 
 
 @final
@@ -174,9 +194,7 @@ class Subregion(Base):
 
     __tablename__ = "subregions"
 
-    id: Mapped[int] = mapped_column(
-        "subregion_id", INTEGER, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column("subregion_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
     region_id: Mapped[int] = mapped_column(
         "region_id",
@@ -193,13 +211,7 @@ class Subregion(Base):
 
     @override
     def __repr__(self) -> str:
-        return (
-            "Subregion("
-            f"id={repr(self.id)}, "
-            f"name={repr(self.name)}, "
-            f"region_id={repr(self.region_id)}"
-            ")"
-        )
+        return f"Subregion(id={repr(self.id)}, name={repr(self.name)}, region_id={repr(self.region_id)})"
 
 
 @final
@@ -216,14 +228,10 @@ class Language(Base):
 
     __tablename__ = "languages"
 
-    id: Mapped[int] = mapped_column(
-        "language_id", INTEGER, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column("language_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
 
-    countries: Mapped[list[Country]] = relationship(
-        secondary=country_language, back_populates="languages"
-    )
+    countries: Mapped[list[Country]] = relationship(secondary=country_language, back_populates="languages")
 
     @override
     def __str__(self) -> str:
@@ -250,16 +258,12 @@ class Currency(Base):
 
     __tablename__ = "currencies"
 
-    id: Mapped[int] = mapped_column(
-        "currency_id", INTEGER, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column("currency_id", INTEGER, primary_key=True, autoincrement=True)
     code: Mapped[str] = mapped_column("code", VARCHAR(3), unique=True, nullable=False)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
     symbol: Mapped[str] = mapped_column("symbol", VARCHAR(10), nullable=False)
 
-    countries: Mapped[list[Country]] = relationship(
-        secondary=country_currency, back_populates="currencies"
-    )
+    countries: Mapped[list[Country]] = relationship(secondary=country_currency, back_populates="currencies")
 
     @override
     def __str__(self) -> str:
@@ -297,13 +301,9 @@ class Country(Base):
 
     __tablename__ = "countries"
 
-    id: Mapped[int] = mapped_column(
-        "country_id", INTEGER, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column("country_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
-    official_name: Mapped[str] = mapped_column(
-        "official_name", VARCHAR(255), unique=True, nullable=False
-    )
+    official_name: Mapped[str] = mapped_column("official_name", VARCHAR(255), unique=True, nullable=False)
     code: Mapped[str] = mapped_column("code", VARCHAR(2), nullable=False)
     area: Mapped[float] = mapped_column("area", REAL, nullable=False)
     tld: Mapped[str] = mapped_column("tld", VARCHAR(10), nullable=False)
@@ -322,15 +322,9 @@ class Country(Base):
     subregion: Mapped[Subregion] = relationship(back_populates="countries")
     locations: Mapped[list[Location]] = relationship(back_populates="country")
 
-    continents: Mapped[list[Continent]] = relationship(
-        secondary=country_continent, back_populates="countries"
-    )
-    currencies: Mapped[list[Currency]] = relationship(
-        secondary=country_currency, back_populates="countries"
-    )
-    languages: Mapped[list[Language]] = relationship(
-        secondary=country_language, back_populates="countries"
-    )
+    continents: Mapped[list[Continent]] = relationship(secondary=country_continent, back_populates="countries")
+    currencies: Mapped[list[Currency]] = relationship(secondary=country_currency, back_populates="countries")
+    languages: Mapped[list[Language]] = relationship(secondary=country_language, back_populates="countries")
 
     @override
     def __str__(self) -> str:
@@ -498,9 +492,7 @@ class Location(Base):
 
     __tablename__ = "locations"
 
-    id: Mapped[int] = mapped_column(
-        "location_id", INTEGER, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column("location_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
     latitude: Mapped[float] = mapped_column("latitude", REAL, nullable=False)
     longitude: Mapped[float] = mapped_column("longitude", REAL, nullable=False)
@@ -525,9 +517,7 @@ class Location(Base):
     )
     country: Mapped[Country] = relationship(back_populates="locations")
     users_homes: Mapped[list[User]] = relationship(back_populates="home_location")
-    users_locations: Mapped[list[UserLocation]] = relationship(
-        back_populates="location"
-    )
+    users_locations: Mapped[list[UserLocation]] = relationship(back_populates="location")
 
     @override
     def __str__(self) -> str:
@@ -553,9 +543,7 @@ class Location(Base):
 class UserLocation(Base):
     __tablename__ = "users_locations"
 
-    id: Mapped[int] = mapped_column(
-        "user_location_id", INTEGER, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column("user_location_id", INTEGER, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
         "user_id",
         INTEGER,
@@ -587,3 +575,37 @@ class UserLocation(Base):
         default=False,
         server_default=sql.text("0"),
     )
+
+
+# @final
+# class UserPassword(Base):
+#     __tablename__ = "users_passwords"
+#
+#     id: Mapped[int] = mapped_column(
+#         "user_password_id", INTEGER, primary_key=True, autoincrement=True
+#     )
+#     user_id: Mapped[int] = mapped_column(
+#         "user_id",
+#         INTEGER,
+#         ForeignKey(
+#             "users.user_id",
+#             onupdate="CASCADE",
+#             ondelete="RESTRICT",
+#         ),
+#         nullable=False,
+#     )
+#     user: Mapped[User] = relationship(back_populates="passwords_hashes")
+#
+#     password_hash: Mapped[int] = mapped_column(
+#         "password_hash",
+#         TEXT,
+#         nullable=False,
+#     )
+#
+#     is_valid: Mapped[bool] = mapped_column(
+#         "is_valid",
+#         BOOLEAN,
+#         nullable=False,
+#         default=True,
+#         server_default=sql.text("1"),
+#     )
