@@ -1,33 +1,17 @@
-# ruff: noqa: E261, F401
-# pyright: reportUnusedImport=false
-
 from collections.abc import Sequence
-from dataclasses import dataclass
-from modulefinder import test
 from pathlib import Path
-from pprint import pprint
 from typing import Any
 
-from pydantic_core.core_schema import dict_schema
-import requests
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from citycheck.api.crud import create_user, delete_user, read_location, read_user
-from citycheck.api.models.continent import ContinentCreate
-from citycheck.api.models.country import CountrySchema
 from citycheck.api.models.location import LocationCreate
-from citycheck.api.models.user import UserCreate, UserModel
-from citycheck.api.routers.api import continents
 from citycheck.core.requests.get import get_request
 from citycheck.core.requests.sources import (
-    GEOCODING_API,
-    RESTCOUNTRIES_API_AUTH,
     SourceAPI,
 )
-from citycheck.core.utils import load_json, save_json
-from citycheck.db.db import SqliteDB, init_db
+from citycheck.core.setup.setup import run_setup
+from citycheck.core.utils import load_json
 from citycheck.db.models import (
     Continent,
     Country,
@@ -36,9 +20,7 @@ from citycheck.db.models import (
     Location,
     Region,
     Subregion,
-    User,
 )
-from citycheck.settings import DATA_DIR, INIT_DATA_FILE, ROOT
 
 
 def get_location_data(name: str, api: SourceAPI) -> Any:
@@ -140,25 +122,19 @@ def get_country_data(
     data["openstreetmaps"] = json_data["links"]["open_street_maps"]
 
     subregion_name: str = json_data["subregion"]
-    subregion = session.scalar(
-        select(Subregion).where(Subregion.name == subregion_name)
-    )
+    subregion = session.scalar(select(Subregion).where(Subregion.name == subregion_name))
     if not subregion:
         data["subregion_id"] = None
     else:
         data["subregion_id"] = subregion.id
 
     currency_codes: list[str] = [c["code"] for c in json_data["currencies"]]
-    currencies = session.scalars(
-        select(Currency).where(Currency.code.in_(currency_codes))
-    ).all()
+    currencies = session.scalars(select(Currency).where(Currency.code.in_(currency_codes))).all()
     if not currencies:
         raise LookupError(f"Currencies not found: {currency_codes}")
 
     languages_names: list[str] = [lang["name"] for lang in json_data["languages"]]
-    languages = session.scalars(
-        select(Language).where(Language.name.in_(languages_names))
-    ).all()
+    languages = session.scalars(select(Language).where(Language.name.in_(languages_names))).all()
     if not languages:
         raise LookupError(f"Languages not found: {languages_names}")
 
@@ -227,7 +203,9 @@ def save_location(data: dict[str, Any], session: Session) -> None:
 
 def run() -> None:
     run_setup(rebuild_db=True, update_init_data=True)
-
+    # app_config = load_app_config(Path.cwd() / "configs" / "app_config.toml")
+    # print(app_config)
+    #
     # get_initial_data()
     # return
 
