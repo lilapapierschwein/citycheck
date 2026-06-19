@@ -1,0 +1,13 @@
+{% extends "base.html" %} 
+{% block title %}Settings | citycheck{% endblock %} 
+{% block content %}
+<h1>Settings</h1>
+
+<div
+    hx-get="/settings"
+    hx-trigger="load"
+    hx-target="this"
+>
+    {% include "settings/_user_data.html" %}
+</div>
+{% endblock %}

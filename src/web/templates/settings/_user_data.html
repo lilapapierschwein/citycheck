@@ -1,0 +1,9 @@
+{% if user %} 
+<p>User Data:</p>
+<ul>
+    <li>User: {{ user.username }}</li>
+    <li>E-Mail: {{ user.email }}</li>
+</ul>
+{% else %}
+<p>No user data found</p>
+{% endif %}
