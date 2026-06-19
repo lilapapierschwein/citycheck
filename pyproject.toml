@@ -20,8 +20,9 @@ dependencies = [
 
 [project.scripts]
 citycheck = "citycheck.core.cli.main:main"
-citycheck-api = "citycheck.api.main:main"
-citycheck-setup = "citycheck.core.setup:main"
+cc-dev = "citycheck.main:main"
+# citycheck-api = "citycheck.api.main:main"
+# citycheck-setup = "citycheck.core.setup:main"
 
 [build-system]
 requires = ["uv_build>=0.11.18,<0.12.0"]

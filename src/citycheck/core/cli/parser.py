@@ -9,7 +9,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from citycheck.core.utils import APIDefaults
-from citycheck.settings import API_DEFAULTS, SRC_DIR
+from citycheck.settings import APP_CONFIG
 
 PROG = "citycheck"
 VERSION = "0.1.0"
@@ -58,7 +58,7 @@ def create_api_parser(
     name: str = "api",
     prog: str = PROG,
     version: str = VERSION,
-    defaults: APIDefaults = API_DEFAULTS,
+    defaults: APIDefaults = APP_CONFIG.api.defaults,
 ):
     api_parser = parser.add_parser(name)
 
@@ -121,7 +121,11 @@ def create_dev_parser(
         "-e", "--include-empty-lines", action="store_true", help="include empty lines."
     )
     _ = loc_parser.add_argument(
-        "path", type=Path, default=SRC_DIR, nargs="?", help="target directory. (default: src/)"
+        "path",
+        type=Path,
+        default=APP_CONFIG.files.dirs.src,
+        nargs="?",
+        help="target directory. (default: src/)",
     )
 
     return dev_parser

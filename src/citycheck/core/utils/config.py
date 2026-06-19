@@ -105,6 +105,10 @@ class ApiConfig(BaseModel):
     max_port: int
     default_port: int
 
+    @property
+    def defaults(self) -> APIDefaults:
+        return {"version": self.default_version, "port": self.default_port}
+
 
 class AppConfigBase(BaseModel):
     general: GeneralConfig

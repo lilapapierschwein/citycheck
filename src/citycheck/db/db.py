@@ -5,7 +5,7 @@ from typing import override
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from citycheck.settings import DB_FILE
+from citycheck.settings import APP_CONFIG
 
 from .models import Base
 
@@ -47,7 +47,7 @@ class SqliteDB:
         return None
 
 
-def init_db(db_file: Path = DB_FILE) -> SqliteDB:
+def init_db(db_file: Path = APP_CONFIG.files.paths.db) -> SqliteDB:
     return SqliteDB(db_file)
 
 

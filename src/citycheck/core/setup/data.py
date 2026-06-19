@@ -12,7 +12,7 @@ from citycheck.core.requests.sources import (
     SourceAPI,
 )
 from citycheck.core.utils import format_timedelta, load_json, save_json
-from citycheck.settings import INIT_DATA_FILE
+from citycheck.settings import APP_CONFIG
 
 from .utils import get_term_width, print_headline
 
@@ -80,12 +80,10 @@ def get_countries_data(
     if verbose:
         print(f"retreived {total}/{total} items...{Fore.GREEN}DONE{Style.RESET_ALL}")
 
-    return CountriesData(
-        objects=objects, total=total, timestamp=int(dt.now().timestamp())
-    )
+    return CountriesData(objects=objects, total=total, timestamp=int(dt.now().timestamp()))
 
 
-def get_initial_data(file: Path = INIT_DATA_FILE, verbose: bool = True):
+def get_initial_data(file: Path = APP_CONFIG.files.paths.init_data, verbose: bool = True):
     if file.exists():
         now = dt.now()
         existing_data = load_json(file)
@@ -98,9 +96,7 @@ def get_initial_data(file: Path = INIT_DATA_FILE, verbose: bool = True):
                 f"{Fore.YELLOW}warning: the last update was done only",
                 f"{format_timedelta(last_updated)} ago!{Style.RESET_ALL}",
             )
-            user_confirm = (
-                input("are you sure you want to update again? [y/N]: ").strip().lower()
-            )
+            user_confirm = input("are you sure you want to update again? [y/N]: ").strip().lower()
             if user_confirm not in ("y", "yes"):
                 print("data update cancelled.")
                 return None

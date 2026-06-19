@@ -6,7 +6,9 @@ from datetime import datetime as dt
 from pathlib import Path
 from typing import Literal, TypedDict, override
 
-from citycheck.settings import APP_NAME, ROOT, SRC_DIR
+from citycheck.settings import APP_CONFIG
+
+paths = APP_CONFIG.files
 
 
 class LCPathDict(TypedDict):
@@ -244,11 +246,11 @@ def count_lines_cli(args: Namespace) -> None:
     filetypes = [ft.strip(".") for ft in filetypes]
 
     count_lines = LinesCounter(
-        root=(args.path or SRC_DIR).absolute(),
+        root=(args.path or paths.dirs.src).absolute(),
         pattern=re.compile(rf"\.({'|'.join(filetypes)})$"),
         ignore_files=args.ignore,
-        project_root=ROOT,
-        project_name=APP_NAME,
+        project_root=paths.paths.root,
+        project_name=APP_CONFIG.general.app_name,
         ignore_empty_lines=not args.include_empty_lines,
     )
 

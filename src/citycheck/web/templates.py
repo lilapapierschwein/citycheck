@@ -1,5 +1,5 @@
 from fastapi.templating import Jinja2Templates
 
-from citycheck.settings import TEMPLATES_DIR
+from citycheck.settings import APP_CONFIG
 
-templates = Jinja2Templates(directory=TEMPLATES_DIR)
+templates = Jinja2Templates(directory=APP_CONFIG.files.dirs.templates)

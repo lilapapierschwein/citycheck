@@ -4,12 +4,14 @@ from citycheck.db.db import init_db
 from citycheck.db.models import (
     User,
 )
-from citycheck.settings import DB_FILE, INIT_DATA_FILE
+from citycheck.settings import APP_CONFIG
 
 # from .cli import parse_args
 from .data import get_initial_data
 from .inserts import insert_initial_data
 from .utils import get_term_width, print_headline
+
+filepaths = APP_CONFIG.files.paths
 
 
 def run_setup(
@@ -18,7 +20,7 @@ def run_setup(
     insert_testuser: bool = False,
     verbose: bool = True,
 ):
-    db_file, init_data_file = DB_FILE, INIT_DATA_FILE
+    db_file, init_data_file = filepaths.db, filepaths.init_data
     text_width = 80 if not verbose else get_term_width()
 
     if verbose:
@@ -40,7 +42,7 @@ def run_setup(
             print(
                 f"deleting database file: {db_file}...{Fore.GREEN}DONE{Style.RESET_ALL}",
             )
-    if not INIT_DATA_FILE.exists() or update_init_data:
+    if not filepaths.init_data.exists() or update_init_data:
         if verbose:
             print("creating/updating init data...")
         get_initial_data(init_data_file)

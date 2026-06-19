@@ -13,7 +13,7 @@ API_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 def get_app(
     api_routers: list[APIRouter],
     web_routers: list[APIRouter],
-    title: str = APP_CONFIG.app_name,
+    title: str = APP_CONFIG.general.app_name,
     version: str = "0.1.0",
     api_version: str = APP_CONFIG.api.default_version,
     api_router_name: str | None = "api",
@@ -38,7 +38,7 @@ app = get_app(**ROUTERS, **API_CONFIG)
 def main() -> None:
     uvicorn.run(
         app="main:app",
-        app_dir=str(APP_CONFIG.root / "src" / "citycheck" / "api"),
+        app_dir=str(APP_CONFIG.files.paths.root / "src" / "citycheck" / "api"),
         port=APP_CONFIG.api.default_port,
     )
 
