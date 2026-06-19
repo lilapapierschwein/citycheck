@@ -6,7 +6,7 @@ from citycheck.db.models import (
 )
 from citycheck.settings import DB_FILE, INIT_DATA_FILE
 
-from .cli import parse_args
+# from .cli import parse_args
 from .data import get_initial_data
 from .inserts import insert_initial_data
 from .utils import get_term_width, print_headline
@@ -77,13 +77,14 @@ def run_setup(
 
 
 def main() -> None:
-    args = parse_args()
-    run_setup(
-        rebuild_db=args.rebuild_db,
-        update_init_data=args.update_data,
-        insert_testuser=args.testuser,
-        verbose=True,
-    )
+    return
+    # args = parse_args()
+    # run_setup(
+    #     rebuild_db=args.rebuild_db,
+    #     update_init_data=args.update_data,
+    #     insert_testuser=args.testuser,
+    #     verbose=True,
+    # )
 
 
 if __name__ == "__main__":

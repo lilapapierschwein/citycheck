@@ -1,3 +1,5 @@
+import os
+import signal
 from typing import Annotated
 
 from fastapi import Depends, Request
@@ -30,3 +32,7 @@ def is_web_request(request: Request) -> bool:
 
 
 WebReq = Annotated[bool, Depends(is_web_request)]
+
+
+def shutdown():
+    os.kill(os.getpid(), signal.SIGINT)

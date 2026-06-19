@@ -4,6 +4,7 @@ from .api import (
     currencies_router,
     languages_router,
     locations_router,
+    misc_router,
     regions_router,
     subregions_router,
     users_router,
@@ -21,6 +22,7 @@ ROUTERS = RoutersDict(
         regions_router,
         subregions_router,
         users_router,
+        misc_router,
     ],
     web_routers=[web_index_router, web_weather_router, web_settings_router],
 )

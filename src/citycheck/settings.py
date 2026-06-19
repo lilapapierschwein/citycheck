@@ -1,19 +1,13 @@
 from pathlib import Path
 
-from citycheck.core.utils import load_app_config
+from citycheck.core.utils import get_project_root, load_app_config
 
-from .utils import get_project_root
-
-APP_NAME = "citycheck"  # should have the same name as your project root dir
+# the app name should have the same name as your project root directory
+APP_NAME = "citycheck"
 ROOT_MARKERS = ["pyproject.toml", ".gitignore", ".venv"]
 CONFIG_FILE_NAME = "app_config.toml"
 
-# DATA_DIR_NAME = "data"
-# INIT_DATA_FILE_NAME = "init_data.json"
-# DOTENV_FILE_NAME = ".env"
-
-
-# WARN: do not change anything below unless you know what you are doing! #######
+# WARN: do not change the lines below *unless* you know what you are doing!
 ROOT = get_project_root(
     file=Path(__file__),
     root_markers=ROOT_MARKERS,
@@ -21,7 +15,7 @@ ROOT = get_project_root(
     user_home=Path.home(),
 )
 
-CONFIGS_DIR = ROOT / "configs"
+CONFIGS_DIR = ROOT
 CONFIG_FILE = CONFIGS_DIR / CONFIG_FILE_NAME
 cfg = load_app_config(CONFIG_FILE)
 
@@ -35,4 +29,4 @@ TEMPLATES_DIR = WEB_DIR / "templates"
 DOTENV_FILE = ROOT / cfg.dotenv_file
 
 DEFAULTS = cfg.defaults
-API_DEFAULTS = DEFAULTS["api"]
+API_DEFAULTS = cfg.defaults["api"]

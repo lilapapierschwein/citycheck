@@ -6,8 +6,10 @@ from datetime import timedelta as td
 from pathlib import Path
 from typing import Any, TypedDict
 
+import requests
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
+from requests.exceptions import ConnectionError
 
 
 def validate_file(file: Path, suffix: str | None = None) -> bool:
@@ -111,3 +113,35 @@ def format_timedelta(t: td) -> str:
     fmt.append(f"{seconds}s")
 
     return " ".join(fmt)
+
+
+def get_project_root(
+    file: Path, root_markers: list[str], project_name: str, user_home: Path
+) -> Path:
+    if not file.is_dir():
+        file = file.parent
+
+    for fp in file.parents:
+        if fp == user_home:
+            break
+        if any((fp / rm).exists() for rm in root_markers) or fp.name == project_name:
+            return fp
+    raise RuntimeError("Unable to find project root.")
+
+
+def api_is_running(url: str = "http://localhost:8000/api/v1/health") -> tuple[bool, str]:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.status_code == 200, response.json()["status"]
+    except ConnectionError as err:
+        return False, str(err)
+
+
+def init_api_shutdown(url: str = "http://localhost:8000/api/v1/shutdown") -> tuple[bool, str]:
+    try:
+        response = requests.post(url)
+        response.raise_for_status()
+        return response.status_code == 200, response.json()["message"]
+    except Exception as err:
+        return False, str(err)

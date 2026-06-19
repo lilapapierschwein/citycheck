@@ -1,6 +1,7 @@
 import sys
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 
+
 PROG = "citycheck-setup"
 VERSION = "0.1.0"
 

@@ -2,13 +2,12 @@ import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from citycheck.api.cli import parse_args
 from citycheck.api.routers import ROUTERS
-from citycheck.settings import ROOT, STATIC_DIR
+from citycheck.settings import API_DEFAULTS, ROOT, STATIC_DIR
 
 APP_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 
-args = parse_args()
+# args = parse_args()
 
 
 def get_app(
@@ -16,7 +15,7 @@ def get_app(
     web_routers: list[APIRouter],
     title: str = "citycheck",
     version: str = "0.1.0",
-    api_version: str = args.use_version,
+    api_version: str = API_DEFAULTS["version"],
     api_router_name: str | None = "api",
 ) -> FastAPI:
     api_prefix = f"/{api_router_name}/v{api_version}" if api_router_name else f"/v{api_version}"
@@ -36,11 +35,11 @@ def get_app(
 app = get_app(**ROUTERS, **APP_CONFIG)
 
 
-def main() -> None:
+def main(port: int | None = None) -> None:
     uvicorn.run(
         app="main:app",
         app_dir=str(ROOT / "src" / "citycheck" / "api"),
-        port=args.port,
+        port=port or API_DEFAULTS["port"],
     )
 
 
