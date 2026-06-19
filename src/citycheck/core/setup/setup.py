@@ -6,6 +6,7 @@ from citycheck.db.models import (
 )
 from citycheck.settings import DB_FILE, INIT_DATA_FILE
 
+from .cli import parse_args
 from .data import get_initial_data
 from .inserts import insert_initial_data
 from .utils import get_term_width, print_headline
@@ -49,9 +50,7 @@ def run_setup(
     db = init_db(db_file)
     if verbose:
         if rebuild_db:
-            print(
-                f"database (re-)created at {db_file}...{Fore.GREEN}DONE{Style.RESET_ALL}"
-            )
+            print(f"database (re-)created at {db_file}...{Fore.GREEN}DONE{Style.RESET_ALL}")
         print(f"database initialized...{Fore.GREEN}DONE{Style.RESET_ALL}")
 
     with db.get_session() as Session:
@@ -78,8 +77,12 @@ def run_setup(
 
 
 def main() -> None:
+    args = parse_args()
     run_setup(
-        rebuild_db=True, update_init_data=True, insert_testuser=True, verbose=True
+        rebuild_db=args.rebuild_db,
+        update_init_data=args.update_data,
+        insert_testuser=args.testuser,
+        verbose=True,
     )
 
 

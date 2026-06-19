@@ -1,13 +1,13 @@
 import json
 import os
+import tomllib
 from datetime import datetime as dt
 from datetime import timedelta as td
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 from dotenv import load_dotenv
-
-from citycheck.settings import DOTENV_FILE
+from pydantic import BaseModel, Field
 
 
 def validate_file(file: Path, suffix: str | None = None) -> bool:
@@ -18,6 +18,43 @@ def validate_file(file: Path, suffix: str | None = None) -> bool:
     if suffix and file.suffix.lower() != suffix.lower():
         raise ValueError(f"File {file} is not a {suffix} file.")
     return True
+
+
+class APIDefaults(TypedDict):
+    version: str
+    port: int
+
+
+class DefaultConfigs(TypedDict):
+    api: APIDefaults
+
+
+class AppConfig(BaseModel):
+    data_dir: str = Field(pattern=r"^[-a-zA-Z0-9_]+$", validation_alias="data_dir_name")
+    init_data_file: str = Field(
+        pattern=r"^[-a-zA-Z0-9_]+\.json$", validation_alias="init_data_file_name"
+    )
+    dotenv_file: str = Field(pattern=r"^[-a-zA-Z0-9_]?\.env$", validation_alias="dotenv_file_name")
+    default_api_version: str = Field(pattern=r"^[0-9]+(\.{1}[0-9]+){0,2}$", default="1")
+    default_api_port: int = Field(ge=3000, le=9999, default=8000)
+
+    @property
+    def defaults(self) -> DefaultConfigs:
+        return {"api": {"version": self.default_api_version, "port": self.default_api_port}}
+
+
+def load_toml_data(file: Path) -> Any:
+    try:
+        _ = validate_file(file, suffix=".toml")
+        with file.open("rb") as f:
+            return tomllib.load(f)
+    except Exception as err:
+        print(f"Error loading file: {err}")
+
+
+def load_app_config(file: Path) -> AppConfig:
+    cfg_data = load_toml_data(file)
+    return AppConfig.model_validate(cfg_data)
 
 
 def load_json(file: Path) -> Any:
@@ -37,7 +74,7 @@ def save_json(file: Path, data: Any) -> None:
         print(f"Error saving file: {err}")
 
 
-def get_env_var(name: str, dotenv_file: Path | None = DOTENV_FILE) -> str:
+def get_env_var(name: str, dotenv_file: Path | None) -> str:
     if dotenv_file:
         _ = validate_file(dotenv_file)
         _ = load_dotenv(dotenv_file)
