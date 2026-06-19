@@ -1,0 +1,3 @@
+data_dir_name = "data"
+init_data_file_name = "init_data.json"
+dotenv_file_name = ".env"

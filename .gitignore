@@ -11,6 +11,8 @@ wheels/
 
 # Local dev files
 local/
+configs/*
+data/*
 *.db
 *.bak
 *.bkp
