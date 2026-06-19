@@ -3,9 +3,9 @@ from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from citycheck.api.routers import ROUTERS
-from citycheck.settings import API_DEFAULTS, ROOT, STATIC_DIR
+from citycheck.settings import APP_CONFIG
 
-APP_CONFIG = {"title": "citycheck", "version": "0.1.0"}
+API_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 
 # args = parse_args()
 
@@ -13,15 +13,15 @@ APP_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 def get_app(
     api_routers: list[APIRouter],
     web_routers: list[APIRouter],
-    title: str = "citycheck",
+    title: str = APP_CONFIG.app_name,
     version: str = "0.1.0",
-    api_version: str = API_DEFAULTS["version"],
+    api_version: str = APP_CONFIG.api.default_version,
     api_router_name: str | None = "api",
 ) -> FastAPI:
     api_prefix = f"/{api_router_name}/v{api_version}" if api_router_name else f"/v{api_version}"
     app = FastAPI(title=title, version=version, docs_url=f"{api_prefix}/docs")
 
-    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    app.mount("/static", StaticFiles(directory=APP_CONFIG.files.dirs.static), name="static")
 
     for router in api_routers:
         app.include_router(router, prefix=api_prefix)
@@ -32,14 +32,14 @@ def get_app(
     return app
 
 
-app = get_app(**ROUTERS, **APP_CONFIG)
+app = get_app(**ROUTERS, **API_CONFIG)
 
 
-def main(port: int | None = None) -> None:
+def main() -> None:
     uvicorn.run(
         app="main:app",
-        app_dir=str(ROOT / "src" / "citycheck" / "api"),
-        port=port or API_DEFAULTS["port"],
+        app_dir=str(APP_CONFIG.root / "src" / "citycheck" / "api"),
+        port=APP_CONFIG.api.default_port,
     )
 
 

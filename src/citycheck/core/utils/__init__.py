@@ -1,11 +1,14 @@
-from .utils import (
+from .config import (
     APIDefaults as APIDefaults,
 )
-from .utils import (
+from .config import (
     AppConfig as AppConfig,
 )
-from .utils import (
+from .config import (
     DefaultConfigs as DefaultConfigs,
+)
+from .config import (
+    load_app_config as load_app_config,
 )
 from .utils import (
     format_timedelta as format_timedelta,
@@ -21,9 +24,6 @@ from .utils import (
 )
 from .utils import (
     get_timestamp as get_timestamp,
-)
-from .utils import (
-    load_app_config as load_app_config,
 )
 from .utils import (
     load_json as load_json,
