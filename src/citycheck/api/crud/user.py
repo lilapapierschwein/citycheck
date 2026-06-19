@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import select
+from sqlalchemy.sql import func, select
 
 from citycheck.api.filters_forms.users import UserQueryFilters
 from citycheck.api.models.user import UserCreate
@@ -31,9 +31,10 @@ async def read_user(user_id: int, session: Session) -> User | None:
     return session.scalar(select(User).where(User.id == user_id))
 
 
-async def read_users(session: Session, filters: UserQueryFilters) -> Sequence[User]:
+async def read_users(session: Session, filters: UserQueryFilters) -> tuple[Sequence[User], int]:
+    total = session.scalar(select(func.count()).select_from(User)) or 0
     stmt = filters.apply(select(User))
-    return session.scalars(stmt).all()
+    return session.scalars(stmt).all(), total
 
 
 # def update_user(user_id: int, session: Session) -> User: ...

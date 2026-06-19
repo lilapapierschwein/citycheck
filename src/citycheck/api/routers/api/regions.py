@@ -13,6 +13,7 @@ from citycheck.api.models.region import (
     SubregionSchema,
 )
 from citycheck.api.utils import CRUDSession
+from citycheck.core.utils import get_timestamp
 
 subregions_router = APIRouter(prefix="/subregions", tags=["subregions"])
 
@@ -28,10 +29,19 @@ async def get_subregion(subregion_id: int, session: CRUDSession):
 
 @subregions_router.get("")
 async def get_subregions(session: CRUDSession, filters: SubregionQueryFilters):
-    subregions = await crud.read_subregions(session, filters)
-    if not subregions:
-        raise HTTPException(status_code=404, detail="No subregions found.")
-    return [SubregionSchema.model_validate(s) for s in subregions]
+    subregions, total = await crud.read_subregions(session, filters)
+    return {
+        "data": {
+            "objects": [SubregionSchema.model_validate(s) for s in subregions],
+            "meta": {
+                "count": len(subregions),
+                "total": total,
+                "limit": filters.limit,
+                "offset": filters.offset,
+                "timestamp": int(get_timestamp()),
+            },
+        }
+    }
 
 
 @subregions_router.post("")
@@ -67,10 +77,19 @@ async def get_region(region_id: int, session: CRUDSession):
 
 @regions_router.get("")
 async def get_regions(session: CRUDSession, filters: RegionQueryFilters):
-    regions = await crud.read_regions(session, filters)
-    if not regions:
-        raise HTTPException(status_code=404, detail="No subregions found.")
-    return [RegionSchema.model_validate(r) for r in regions]
+    regions, total = await crud.read_regions(session, filters)
+    return {
+        "data": {
+            "objects": [RegionSchema.model_validate(r) for r in regions],
+            "meta": {
+                "count": len(regions),
+                "total": total,
+                "limit": filters.limit,
+                "offset": filters.offset,
+                "timestamp": int(get_timestamp()),
+            },
+        }
+    }
 
 
 @regions_router.post("")

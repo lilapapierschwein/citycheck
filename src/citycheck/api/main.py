@@ -13,13 +13,16 @@ def get_app(
     web_routers: list[APIRouter],
     title: str = "citycheck",
     version: str = "0.1.0",
+    api_version: str = "1",
+    api_router_name: str | None = "api",
 ) -> FastAPI:
-    app = FastAPI(title=title, version=version, docs_url="/api/v1/docs")
+    api_prefix = f"/{api_router_name}/v{api_version}" if api_router_name else f"/v{api_version}"
+    app = FastAPI(title=title, version=version, docs_url=f"{api_prefix}/docs")
 
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
     for router in api_routers:
-        app.include_router(router, prefix="/api/v1")
+        app.include_router(router, prefix=api_prefix)
 
     for router in web_routers:
         app.include_router(router)

@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime as dt
 from datetime import timedelta as td
 from pathlib import Path
 from typing import Any
@@ -44,6 +45,14 @@ def get_env_var(name: str, dotenv_file: Path | None = DOTENV_FILE) -> str:
     if v is None:
         raise RuntimeError(f"Unable to load env var: {name!r}")
     return v
+
+
+def get_current_datetime() -> dt:
+    return dt.now()
+
+
+def get_timestamp() -> float:
+    return dt.now().timestamp()
 
 
 def format_timedelta(t: td) -> str:

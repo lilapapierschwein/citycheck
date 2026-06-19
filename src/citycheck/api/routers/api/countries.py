@@ -5,6 +5,7 @@ from citycheck.api import crud
 from citycheck.api.filters_forms.countries import CountryQueryFilters
 from citycheck.api.models.country import CountryCreate, CountrySchema
 from citycheck.api.utils import CRUDSession
+from citycheck.core.utils import get_timestamp
 
 router = APIRouter(prefix="/countries", tags=["countries"])
 
@@ -21,16 +22,15 @@ async def get_country(country_id: int, session: CRUDSession):
 @router.get("")
 async def get_countries(session: CRUDSession, query_params: CountryQueryFilters):
     countries, total = await crud.read_countries(session, query_params)
-    if not countries:
-        raise HTTPException(status_code=404, detail="No countries found.")
     return {
         "data": {
             "objects": [CountrySchema.model_validate(c) for c in countries],
             "meta": {
-                "total": total,
                 "count": len(countries),
+                "total": total,
                 "limit": query_params.limit,
                 "offset": query_params.offset,
+                "timestamp": int(get_timestamp()),
             },
         }
     }

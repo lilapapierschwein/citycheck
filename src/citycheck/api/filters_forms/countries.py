@@ -22,12 +22,13 @@ class CountryQueryParams(QueryParams):
     orderBy: Literal[
         "id",
         "name",
-        "officialName",
+        "official_name",
         "code",
         "region",
         "subregion",
     ] = "id"
     name: LowercaseStr | None = None
+    official_name: LowercaseStr | None = None
     code: LowercaseStr | None = None
     currency: LowercaseStr | None = None
     language: LowercaseStr | None = None
@@ -46,6 +47,7 @@ class CountryQueryParams(QueryParams):
             "CountryQueryParams("
             f"orderBy={repr(self.orderBy)}, "
             f"name={repr(self.name)}, "
+            f"official_name={repr(self.official_name)}, "
             f"code={repr(self.code)}, "
             f"currency={repr(self.currency)}, "
             f"language={repr(self.language)}, "
@@ -59,19 +61,21 @@ class CountryQueryParams(QueryParams):
     @property
     def order_by(
         self,
-    ) -> (
-        UnaryExpression[InstrumentedAttribute[Country]] | InstrumentedAttribute[Country]
-    ):
+    ) -> UnaryExpression[InstrumentedAttribute[Country]] | InstrumentedAttribute[Country]:
         """Returns the SQLAlchemy order_by expression based on the orderBy and sort parameters."""
         return (
-            getattr(Country, self._order_col).asc()
-            if self.sort == "asc"
-            else getattr(Country, self._order_col).desc()
+            getattr(Country, self._order_col).asc() if self.sort == "asc" else getattr(Country, self._order_col).desc()
         )
 
     def apply(self, stmt: Select[tuple[Country]]) -> Select[tuple[Country]]:
         if self.q:
-            stmt = stmt.where(Country.name.ilike(f"%{self.q}%"))
+            stmt = stmt.where(
+                or_(
+                    Country.name.ilike(f"%{self.q}%"),
+                    Country.official_name.ilike(f"%{self.q}%"),
+                    Country.code.ilike(f"%{self.q}%"),
+                )
+            )
         elif self.name:
             stmt = stmt.where(func.lower(Country.name) == self.name)
 
@@ -85,13 +89,9 @@ class CountryQueryParams(QueryParams):
                 )
             )
         if self.language:
-            stmt = stmt.where(
-                Country.languages.any(func.lower(Language.name) == self.language)
-            )
+            stmt = stmt.where(Country.languages.any(func.lower(Language.name) == self.language))
         if self.continent:
-            stmt = stmt.where(
-                Country.continents.any(func.lower(Continent.name) == self.continent)
-            )
+            stmt = stmt.where(Country.continents.any(func.lower(Continent.name) == self.continent))
         if self.subregion or self.region:
             stmt = stmt.join(Subregion)
         if self.subregion:

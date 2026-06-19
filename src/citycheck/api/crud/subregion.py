@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import select
+from sqlalchemy.sql import func, select
 
 from citycheck.api.filters_forms.regions import (
     SubregionQueryFilters,
@@ -20,9 +20,7 @@ async def create_subregion(data: SubregionCreate, session: Session) -> Subregion
     return subregion
 
 
-async def create_subregions(
-    data: list[SubregionCreate], session: Session
-) -> list[Subregion]:
+async def create_subregions(data: list[SubregionCreate], session: Session) -> list[Subregion]:
     subregions = [Subregion(**d.model_dump()) for d in data]
 
     session.add_all(subregions)
@@ -35,12 +33,10 @@ async def read_subregion(region_id: int, session: Session) -> Subregion:
     return session.get_one(Subregion, region_id)
 
 
-async def read_subregions(
-    session: Session, filters: SubregionQueryFilters
-) -> Sequence[Subregion]:
-    print(repr(filters))
+async def read_subregions(session: Session, filters: SubregionQueryFilters) -> tuple[Sequence[Subregion], int]:
+    total = session.scalar(select(func.count()).select_from(Subregion)) or 0
     stmt = filters.apply(select(Subregion))
-    return session.scalars(stmt).all()
+    return session.scalars(stmt).all(), total
 
 
 # def update_region(region_id: int, session: Session) -> Subregion: ...

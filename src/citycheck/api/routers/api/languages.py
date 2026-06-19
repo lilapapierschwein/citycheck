@@ -8,6 +8,7 @@ from citycheck.api.models.language import (
     LanguageSchema,
 )
 from citycheck.api.utils import CRUDSession
+from citycheck.core.utils import get_timestamp
 
 router = APIRouter(prefix="/languages", tags=["languages"])
 
@@ -23,10 +24,19 @@ async def get_subregion(language_id: int, session: CRUDSession):
 
 @router.get("")
 async def get_languages(session: CRUDSession, filters: LanguageQueryFilters):
-    languages = await crud.read_languages(session, filters)
-    if not languages:
-        raise HTTPException(status_code=404, detail="No languages found.")
-    return [LanguageSchema.model_validate(lang) for lang in languages]
+    languages, total = await crud.read_languages(session, filters)
+    return {
+        "data": {
+            "objects": [LanguageSchema.model_validate(lang) for lang in languages],
+            "meta": {
+                "count": len(languages),
+                "total": total,
+                "limit": filters.limit,
+                "offset": filters.offset,
+                "timestamp": int(get_timestamp()),
+            },
+        }
+    }
 
 
 @router.post("")

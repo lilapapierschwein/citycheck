@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import select
+from sqlalchemy.sql import func, select
 
 from citycheck.api.filters_forms.regions import RegionQueryFilters
 from citycheck.api.models.region import RegionCreate
@@ -31,11 +31,10 @@ async def read_region(region_id: int, session: Session) -> Region:
     return session.get_one(Region, region_id)
 
 
-async def read_regions(
-    session: Session, filters: RegionQueryFilters
-) -> Sequence[Region]:
+async def read_regions(session: Session, filters: RegionQueryFilters) -> tuple[Sequence[Region], int]:
+    total = session.scalar(select(func.count()).select_from(Region)) or 0
     stmt = filters.apply(select(Region))
-    return session.scalars(stmt).all()
+    return session.scalars(stmt).all(), total
 
 
 # def update_region(region_id: int, session: Session) -> Region: ...

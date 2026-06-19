@@ -9,7 +9,9 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "colorama>=0.4.6",
+    "dotenv>=0.9.9",
     "fastapi[standard]>=0.136.3",
+    "pwdlib[argon2]>=0.3.0",
     "pydantic>=2.13.4",
     "requests>=2.34.2",
     "sqlalchemy>=2.0.50",
@@ -19,12 +21,19 @@ dependencies = [
 [project.scripts]
 citycheck = "citycheck:main"
 api = "citycheck.api.main:main"
+setup = "citycheck.core.setup:main"
 
 [build-system]
 requires = ["uv_build>=0.11.18,<0.12.0"]
 build-backend = "uv_build"
 
+# lsp settings
 [tool.basedpyright]
 # we want to handle library code explicity
 reportExplicitAny = false
 reportAny = false
+
+# linting
+[tool.ruff]
+line-length = 99
+indent-width = 4

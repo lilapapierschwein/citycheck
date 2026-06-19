@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import select
+from sqlalchemy.sql import func, select
 
 from citycheck.api.filters_forms.languages import LanguageQueryFilters
 from citycheck.api.models.language import LanguageCreate
@@ -18,9 +18,7 @@ async def create_language(data: LanguageCreate, session: Session) -> Language:
     return language
 
 
-async def create_languages(
-    data: list[LanguageCreate], session: Session
-) -> list[Language]:
+async def create_languages(data: list[LanguageCreate], session: Session) -> list[Language]:
     languages = [Language(**d.model_dump()) for d in data]
 
     session.add_all(languages)
@@ -33,11 +31,10 @@ async def read_language(language_id: int, session: Session) -> Language:
     return session.get_one(Language, language_id)
 
 
-async def read_languages(
-    session: Session, filters: LanguageQueryFilters
-) -> Sequence[Language]:
+async def read_languages(session: Session, filters: LanguageQueryFilters) -> tuple[Sequence[Language], int]:
+    total = session.scalar(select(func.count()).select_from(Language)) or 0
     stmt = filters.apply(select(Language))
-    return session.scalars(stmt).all()
+    return session.scalars(stmt).all(), total
 
 
 # def update_language(language_id: int, session: Session) -> Language: ...

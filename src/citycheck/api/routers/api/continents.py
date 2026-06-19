@@ -2,8 +2,10 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from citycheck.api import crud
+from citycheck.api.filters_forms.continents import ContinentQueryFilters
 from citycheck.api.models.continent import ContinentCreate, ContinentSchema
 from citycheck.api.utils import CRUDSession
+from citycheck.core.utils import get_timestamp
 
 router = APIRouter(prefix="/continents", tags=["continents"])
 
@@ -18,11 +20,20 @@ async def get_continent(continent_id: int, session: CRUDSession):
 
 
 @router.get("")
-async def get_continents(session: CRUDSession):
-    continents = await crud.read_continents(session)
-    if not continents:
-        raise HTTPException(status_code=404, detail="No continents found.")
-    return [ContinentSchema.model_validate(c) for c in continents]
+async def get_continents(session: CRUDSession, filters: ContinentQueryFilters):
+    continents, total = await crud.read_continents(session, filters)
+    return {
+        "data": {
+            "objects": [ContinentSchema.model_validate(c) for c in continents],
+            "meta": {
+                "count": len(continents),
+                "total": total,
+                "limit": filters.limit,
+                "offset": filters.offset,
+                "timestamp": int(get_timestamp()),
+            },
+        }
+    }
 
 
 @router.post("")

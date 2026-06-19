@@ -8,6 +8,7 @@ from citycheck.api.models.user import (
     UserSchema,
 )
 from citycheck.api.utils import CRUDSession
+from citycheck.core.utils import get_timestamp
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -23,10 +24,19 @@ async def get_user(user_id: int, session: CRUDSession):
 
 @router.get("")
 async def get_users(session: CRUDSession, filters: UserQueryFilters):
-    users = await crud.read_users(session, filters)
-    if not users:
-        raise HTTPException(status_code=404, detail="No users not found.")
-    return [UserSchema.model_validate(u) for u in users]
+    users, total = await crud.read_users(session, filters)
+    return {
+        "data": {
+            "objects": [UserSchema.model_validate(u) for u in users],
+            "meta": {
+                "count": len(users),
+                "total": total,
+                "limit": filters.limit,
+                "offset": filters.offset,
+                "timestamp": int(get_timestamp()),
+            },
+        }
+    }
 
 
 @router.post("")

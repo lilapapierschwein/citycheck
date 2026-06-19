@@ -5,6 +5,7 @@ from citycheck.api import crud
 from citycheck.api.filters_forms.currencies import CurrencyQueryFilters
 from citycheck.api.models.currency import CurrencyCreate, CurrencySchema
 from citycheck.api.utils import CRUDSession
+from citycheck.core.utils import get_timestamp
 
 router = APIRouter(prefix="/currencies", tags=["currencies"])
 
@@ -20,10 +21,19 @@ async def get_currency(currency_id: int, session: CRUDSession):
 
 @router.get("")
 async def get_currencies(session: CRUDSession, filters: CurrencyQueryFilters):
-    currencies = await crud.read_currencies(session, filters)
-    if not currencies:
-        raise HTTPException(status_code=404, detail="No currencies found.")
-    return [CurrencySchema.model_validate(c) for c in currencies]
+    currencies, total = await crud.read_currencies(session, filters)
+    return {
+        "data": {
+            "objects": [CurrencySchema.model_validate(c) for c in currencies],
+            "meta": {
+                "count": len(currencies),
+                "total": total,
+                "limit": filters.limit,
+                "offset": filters.offset,
+                "timestamp": int(get_timestamp()),
+            },
+        }
+    }
 
 
 @router.post("")
