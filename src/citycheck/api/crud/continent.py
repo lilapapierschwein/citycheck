@@ -4,6 +4,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
+from citycheck.api.filters_forms.continents import ContinentQueryFilters
 from citycheck.api.models.continent import ContinentCreate
 from citycheck.db.models import Continent
 
@@ -32,8 +33,12 @@ async def read_continent(continent_id: int, session: Session) -> Continent:
     return session.get_one(Continent, continent_id)
 
 
-async def read_continents(session: Session) -> Sequence[Continent]:
-    return session.scalars(select(Continent)).all()
+async def read_continents(
+    session: Session, filters: ContinentQueryFilters
+) -> Sequence[Continent]:
+    # total = session.scalar(select(func.count()).select_from(Continent)) or 0
+    stmt = filters.apply(select(Continent))
+    return session.scalars(stmt).all()
 
 
 # def update_continent(continent_id: int, session: Session) -> Continent: ...

@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class CurrencyCreate(BaseModel):
+    code: str
     name: str
     symbol: str
 
@@ -18,6 +19,7 @@ class CurrencyCreate(BaseModel):
 
 class CurrencyModel(BaseModel):
     id: int
+    code: str
     name: str
     symbol: str
 
@@ -32,6 +34,7 @@ class CurrencyModel(BaseModel):
         return (
             f"{self.__class__.__name__}("
             f"id={self.id}, "
+            f"code={self.code}, "
             f"name={self.name}, "
             f"symbol={self.symbol}"
             ")"

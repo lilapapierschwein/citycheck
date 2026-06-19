@@ -4,9 +4,11 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, select
 
-from citycheck.api.filters_forms import CountryQueryFilters
+from citycheck.api.filters_forms.countries import CountryQueryFilters
 from citycheck.api.models.country import CountryCreate
-from citycheck.db.models import Country, Currency, Language, Region, Subregion
+from citycheck.db.models import (
+    Country,
+)
 
 
 async def create_country(data: CountryCreate, session: Session) -> Country:
@@ -21,12 +23,12 @@ async def create_country(data: CountryCreate, session: Session) -> Country:
 async def create_countries(
     data: list[CountryCreate], session: Session
 ) -> list[Country]:
-    users = [Country(**d.model_dump()) for d in data]
+    countries = [Country(**d.model_dump()) for d in data]
 
-    session.add_all(users)
+    session.add_all(countries)
     session.commit()
 
-    return users
+    return countries
 
 
 async def read_country(contry_id: int, session: Session) -> Country:
@@ -35,30 +37,10 @@ async def read_country(contry_id: int, session: Session) -> Country:
 
 async def read_countries(
     session: Session, filters: CountryQueryFilters
-) -> Sequence[Country]:
-    stmt = select(Country)
-
-    if filters.name:
-        stmt = stmt.where(func.lower(Country.name) == filters.name.lower())
-    if filters.code:
-        stmt = stmt.where(func.lower(Country.code) == filters.code.lower())
-    if filters.currency:
-        stmt = stmt.join(Currency).where(
-            Currency.name.ilike(f"%{filters.currency.lower()}%")
-        )
-    if filters.language:
-        stmt = stmt.join(Language).where(
-            func.lower(Language.name) == filters.language.lower()
-        )
-    if filters.subregion or filters.region:
-        stmt = stmt.join(Subregion)
-    if filters.subregion:
-        stmt = stmt.where(func.lower(Subregion.name) == filters.subregion.lower())
-    if filters.region:
-        stmt = stmt.join(Region).where(func.lower(Region.name) == filters.region.lower())
-    stmt = stmt.limit(filters.limit).offset(filters.offset)
-
-    return session.scalars(stmt).all()
+) -> tuple[Sequence[Country], int]:
+    total = session.scalar(select(func.count()).select_from(Country)) or 0
+    stmt = filters.apply(select(Country))
+    return session.scalars(stmt).all(), total
 
 
 # def update_country(contry_id: int, session: Session) -> Country: ...

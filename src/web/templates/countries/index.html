@@ -4,12 +4,12 @@
 <h1>Countries</h1>
 <input
   type="search"
-  name="name"
+  name="q"
   placeholder="Search countries…"
   hx-get="/countries"
   hx-trigger="input changed delay:300ms"
   hx-target="#country-list"
-  hx-include="[name='name']"
+  hx-include="[name='q']"
 >
 <div id="country-list">
   {% include "countries/_list.html" %}

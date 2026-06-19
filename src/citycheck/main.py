@@ -1,6 +1,7 @@
 # ruff: noqa: E261, F401
 # pyright: reportUnusedImport=false
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from modulefinder import test
 from pathlib import Path
@@ -14,6 +15,7 @@ from sqlalchemy.sql import select
 
 from citycheck.api.crud import create_user, delete_user, read_location, read_user
 from citycheck.api.models.continent import ContinentCreate
+from citycheck.api.models.country import CountrySchema
 from citycheck.api.models.location import LocationCreate
 from citycheck.api.models.user import UserCreate, UserModel
 from citycheck.core.requests.get import get_request
@@ -116,7 +118,9 @@ def insert_regions_subregions(file: Path, session: Session) -> None:
             print(f"[#{sr.id}] {sr}")
 
 
-def get_country_data(json_data: dict[str, Any], session: Session) -> Country:
+def get_country_data(
+    json_data: dict[str, Any], session: Session
+) -> tuple[Country, Sequence[Currency], Sequence[Language], Sequence[Continent]]:
     data = {
         "name": json_data["names"]["common"],
         "official_name": json_data["names"]["official"],
@@ -126,26 +130,6 @@ def get_country_data(json_data: dict[str, Any], session: Session) -> Country:
         "flag": json_data["flag"]["emoji"],
         "population": json_data["population"],
     }
-
-    currency_code: str = (
-        json_data["currencies"][0]["code"]
-        if len(json_data["currencies"]) > 0
-        else "USD"
-    )
-    currency = session.scalar(select(Currency).where(Currency.code == currency_code))
-    if not currency:
-        raise LookupError(f"Currency not found: {currency_code}")
-    data["currency_id"] = currency.id
-
-    language_name: str = (
-        json_data["languages"][0]["name"]
-        if len(json_data["languages"]) > 0
-        else "English"
-    )
-    language = session.scalar(select(Language).where(Language.name == language_name))
-    if not language:
-        raise LookupError(f"Language not found: {language_name}")
-    data["language_id"] = language.id
 
     data["googlemaps"] = json_data["links"]["google_maps"]
     data["openstreetmaps"] = json_data["links"]["open_street_maps"]
@@ -159,18 +143,59 @@ def get_country_data(json_data: dict[str, Any], session: Session) -> Country:
     else:
         data["subregion_id"] = subregion.id
 
+    currency_codes: list[str] = [c["code"] for c in json_data["currencies"]]
+    currencies = session.scalars(
+        select(Currency).where(Currency.code.in_(currency_codes))
+    ).all()
+    if not currencies:
+        raise LookupError(f"Currencies not found: {currency_codes}")
+
+    languages_names: list[str] = [lang["name"] for lang in json_data["languages"]]
+    languages = session.scalars(
+        select(Language).where(Language.name.in_(languages_names))
+    ).all()
+    if not languages:
+        raise LookupError(f"Languages not found: {languages_names}")
+
+    continents_names: list[str] = [cont for cont in json_data["continents"]]
+    continents = session.scalars(
+        select(Continent).where(Continent.name.in_(continents_names))
+    ).all()
+    if not continents:
+        raise LookupError(f"Continents not found: {continents_names}")
+
     country = Country(**data)
-    return country
+    return country, currencies, languages, continents
 
 
-def insert_countries(file: Path, session: Session) -> None:
-    countries_json: list[dict[str, Any]] = load_json(file)
-
-    for cj in countries_json:
-        country = get_country_data(cj, session)
-        session.add(country)
-        session.commit()
-        print(f"country inserted: [#{country.id}] {country}")
+# def insert_countries(file: Path, session: Session) -> None:
+#     countries_json: list[dict[str, Any]] = load_json(file)
+#
+#     for cj in countries_json:
+#         country, currencies, languages, continents = get_country_data(cj, session)
+#         session.add(country)
+#         session.commit()
+#
+#         country_currencies = [
+#             CountryCurrency(country_id=country.id, currency_id=cur.id)
+#             for cur in currencies
+#         ]
+#         session.add_all(country_currencies)
+#
+#         country_languages = [
+#             CountryLanguage(country_id=country.id, language_id=lang.id)
+#             for lang in languages
+#         ]
+#         session.add_all(country_languages)
+#
+#         country_continents = [
+#             CountryContinent(country_id=country.id, continent_id=cont.id)
+#             for cont in continents
+#         ]
+#         session.add_all(country_continents)
+#         session.commit()
+#
+#         print(f"country inserted: [#{country.id}] {country}")
 
 
 def save_location(data: dict[str, Any], session: Session) -> None:
@@ -204,11 +229,11 @@ def run() -> None:
     # de = get_country_data("de")
     # pprint(de[0]["translations"]["deu"], indent=2, sort_dicts=False)
 
-    api = GEOCODING_API
-    le_data: list[dict[str, Any]] = get_location_data("Leipzig", api)
-    le = le_data[0]
-
-    pprint(le_data, sort_dicts=False)
+    # api = GEOCODING_API
+    # le_data: list[dict[str, Any]] = get_location_data("Leipzig", api)
+    # le = le_data[0]
+    #
+    # pprint(le_data, sort_dicts=False)
     #
     # le = le_data[0]
     # print(le["country_code"])
@@ -223,13 +248,20 @@ def run() -> None:
 
     db = init_db()
     with db.get_session() as Session:
-        save_location(le, Session)
+        # save_location(le, Session)
         # insert_initial_data(DATA_DIR / "initial_data.json", Session)
         # insert_continents(ROOT / "continents.json", Session)
         # insert_regions_subregions(ROOT / "subregions.json", Session)
         # insert_languages(ROOT / "languages.json", Session)
         # insert_currencies(ROOT / "currencies.json", Session)
         # insert_countries(ROOT / "countries.json", Session)
+
+        result = Session.scalar(select(Country).where(Country.id == 232))
+        if not result:
+            print("MEH")
+            return None
+        de = CountrySchema.model_validate(result)
+        print(de.model_dump_json())
     #
     #     try:
     #         user = read_user(1, Session)

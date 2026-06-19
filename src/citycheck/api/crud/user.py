@@ -4,6 +4,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
+from citycheck.api.filters_forms.users import UserQueryFilters
 from citycheck.api.models.user import UserCreate
 from citycheck.db.models import User
 
@@ -30,8 +31,9 @@ async def read_user(user_id: int, session: Session) -> User | None:
     return session.scalar(select(User).where(User.id == user_id))
 
 
-async def read_users(session: Session) -> Sequence[User]:
-    return session.scalars(select(User)).all()
+async def read_users(session: Session, filters: UserQueryFilters) -> Sequence[User]:
+    stmt = filters.apply(select(User))
+    return session.scalars(stmt).all()
 
 
 # def update_user(user_id: int, session: Session) -> User: ...

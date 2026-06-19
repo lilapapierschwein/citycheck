@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from citycheck.api import crud
+from citycheck.api.filters_forms.languages import LanguageQueryFilters
 from citycheck.api.models.language import (
     LanguageCreate,
     LanguageSchema,
@@ -21,8 +22,8 @@ async def get_subregion(language_id: int, session: CRUDSession):
 
 
 @router.get("")
-async def get_languages(session: CRUDSession):
-    languages = await crud.read_languages(session)
+async def get_languages(session: CRUDSession, filters: LanguageQueryFilters):
+    languages = await crud.read_languages(session, filters)
     if not languages:
         raise HTTPException(status_code=404, detail="No languages found.")
     return [LanguageSchema.model_validate(lang) for lang in languages]

@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from citycheck.api.routers import (
+from citycheck.api.routers.api import (
     continents_router,
     countries_router,
     currencies_router,
@@ -12,8 +12,8 @@ from citycheck.api.routers import (
     subregions_router,
     users_router,
 )
+from citycheck.api.routers.web import countries_router as web_countries_router
 from citycheck.settings import ROOT, STATIC_DIR
-from citycheck.web.routers import countries_router as web_countries_router
 
 APP_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 
@@ -37,12 +37,12 @@ def get_app(
     title: str = "citycheck",
     version: str = "0.1.0",
 ) -> FastAPI:
-    app = FastAPI(title=title, version=version)
+    app = FastAPI(title=title, version=version, docs_url="/api/v1/docs")
 
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
     for router in api_routers:
-        app.include_router(router, prefix="/api")
+        app.include_router(router, prefix="/api/v1")
 
     for router in web_routers:
         app.include_router(router)

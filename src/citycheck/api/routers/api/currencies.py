@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from citycheck.api import crud
+from citycheck.api.filters_forms.currencies import CurrencyQueryFilters
 from citycheck.api.models.currency import CurrencyCreate, CurrencySchema
 from citycheck.api.utils import CRUDSession
 
@@ -18,8 +19,8 @@ async def get_currency(currency_id: int, session: CRUDSession):
 
 
 @router.get("")
-async def get_currencies(session: CRUDSession):
-    currencies = await crud.read_currencies(session)
+async def get_currencies(session: CRUDSession, filters: CurrencyQueryFilters):
+    currencies = await crud.read_currencies(session, filters)
     if not currencies:
         raise HTTPException(status_code=404, detail="No currencies found.")
     return [CurrencySchema.model_validate(c) for c in currencies]

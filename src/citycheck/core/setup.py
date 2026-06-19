@@ -118,45 +118,50 @@ def insert_regions_subregions(
         print(f"{Fore.GREEN}DONE{Style.RESET_ALL}")
 
 
-def get_country_data(data: dict[str, Any], session: Session) -> Country:
-    country_data = {
-        "name": str(data["names"]["common"]),
-        "official_name": str(data["names"]["official"]),
-        "code": str(data["codes"]["alpha_2"]),
-        "area": float(data["area"]["kilometers"]),
-        "tld": str(data["tlds"][0]) if len(data["tlds"]) > 0 else "",
-        "flag": str(data["flag"]["emoji"]),
-        "population": int(data["population"]),
+def get_country_data(json_data: dict[str, Any], session: Session) -> Country:
+    data = {
+        "name": json_data["names"]["common"],
+        "official_name": json_data["names"]["official"],
+        "code": json_data["codes"]["alpha_2"],
+        "area": float(json_data["area"]["kilometers"]),
+        "tld": json_data["tlds"][0] if len(json_data["tlds"]) > 0 else "",
+        "flag": json_data["flag"]["emoji"],
+        "population": json_data["population"],
     }
 
-    currency_code: str = (
-        str(data["currencies"][0]["code"]) if len(data["currencies"]) > 0 else "USD"
-    )
-    currency = session.scalar(select(Currency).where(Currency.code == currency_code))
-    if not currency:
-        raise LookupError(f"Currency not found: {currency_code}")
-    country_data["currency_id"] = currency.id
+    data["googlemaps"] = json_data["links"]["google_maps"]
+    data["openstreetmaps"] = json_data["links"]["open_street_maps"]
 
-    language_name: str = (
-        str(data["languages"][0]["name"]) if len(data["languages"]) > 0 else "English"
-    )
-    language = session.scalar(select(Language).where(Language.name == language_name))
-    if not language:
-        raise LookupError(f"Language not found: {language_name}")
-    country_data["language_id"] = language.id
-
-    country_data["googlemaps"] = data["links"]["google_maps"]
-    country_data["openstreetmaps"] = data["links"]["open_street_maps"]
-
-    subregion_name: str = str(data["subregion"])
+    subregion_name: str = json_data["subregion"]
     subregion = session.scalar(
         select(Subregion).where(Subregion.name == subregion_name)
     )
     if not subregion:
-        raise LookupError(f"Subregion not found: {subregion_name}")
-    country_data["subregion_id"] = subregion.id
+        data["subregion_id"] = None
+    else:
+        data["subregion_id"] = subregion.id
 
-    country = Country(**country_data)
+    country = Country(**data)
+
+    currency_codes: list[str] = [c["code"] for c in json_data["currencies"]]
+    currencies = session.scalars(
+        select(Currency).where(Currency.code.in_(currency_codes))
+    ).all()
+    country.currencies.extend(currencies)
+
+    languages_names: list[str] = [lang["name"] for lang in json_data["languages"]]
+    with session.no_autoflush:
+        languages = session.scalars(
+            select(Language).where(Language.name.in_(languages_names))
+        ).all()
+        country.languages.extend(languages)
+
+        continents_names: list[str] = [cont for cont in json_data["continents"]]
+        continents = session.scalars(
+            select(Continent).where(Continent.name.in_(continents_names))
+        ).all()
+        country.continents.extend(continents)
+
     return country
 
 
@@ -171,8 +176,7 @@ def insert_countries(
         country = get_country_data(cj, session)
         session.add(country)
         session.commit()
-        if verbose:
-            print(f"INSERT: [country#{country.id}] {country}")
+        print(f"country inserted: [#{country.id}] {country}")
 
     if verbose:
         print(f"{Fore.GREEN}DONE{Style.RESET_ALL}")

@@ -4,6 +4,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
+from citycheck.api.filters_forms.languages import LanguageQueryFilters
 from citycheck.api.models.language import LanguageCreate
 from citycheck.db.models import Language
 
@@ -32,8 +33,11 @@ async def read_language(language_id: int, session: Session) -> Language:
     return session.get_one(Language, language_id)
 
 
-async def read_languages(session: Session) -> Sequence[Language]:
-    return session.scalars(select(Language)).all()
+async def read_languages(
+    session: Session, filters: LanguageQueryFilters
+) -> Sequence[Language]:
+    stmt = filters.apply(select(Language))
+    return session.scalars(stmt).all()
 
 
 # def update_language(language_id: int, session: Session) -> Language: ...

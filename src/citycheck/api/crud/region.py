@@ -4,6 +4,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
+from citycheck.api.filters_forms.regions import RegionQueryFilters
 from citycheck.api.models.region import RegionCreate
 from citycheck.db.models import Region
 
@@ -30,8 +31,11 @@ async def read_region(region_id: int, session: Session) -> Region:
     return session.get_one(Region, region_id)
 
 
-async def read_regions(session: Session) -> Sequence[Region]:
-    return session.scalars(select(Region)).all()
+async def read_regions(
+    session: Session, filters: RegionQueryFilters
+) -> Sequence[Region]:
+    stmt = filters.apply(select(Region))
+    return session.scalars(stmt).all()
 
 
 # def update_region(region_id: int, session: Session) -> Region: ...

@@ -1,7 +1,7 @@
 from typing import final, override
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import sql
+from sqlalchemy import Column, Table, sql
 from sqlalchemy.dialects.sqlite import BOOLEAN, INTEGER, REAL, TEXT, VARCHAR
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.orm.properties import ForeignKey
@@ -72,6 +72,28 @@ class User(Base):
         return [loc.location for loc in self.user_locations if loc.is_favorite]
 
 
+country_continent = Table(
+    "countries_continents",
+    Base.metadata,
+    Column("country_id", ForeignKey("countries.country_id"), primary_key=True),  # pyright: ignore[reportUnknownArgumentType]
+    Column("continent_id", ForeignKey("continents.continent_id"), primary_key=True),  # pyright: ignore[reportUnknownArgumentType]
+)
+
+country_currency = Table(
+    "countries_currencies",
+    Base.metadata,
+    Column("country_id", ForeignKey("countries.country_id"), primary_key=True),  # pyright: ignore[reportUnknownArgumentType]
+    Column("currency_id", ForeignKey("currencies.currency_id"), primary_key=True),  # pyright: ignore[reportUnknownArgumentType]
+)
+
+country_language = Table(
+    "countries_languages",
+    Base.metadata,
+    Column("country_id", ForeignKey("countries.country_id"), primary_key=True),  # pyright: ignore[reportUnknownArgumentType]
+    Column("language_id", ForeignKey("languages.language_id"), primary_key=True),  # pyright: ignore[reportUnknownArgumentType]
+)
+
+
 @final
 class Continent(Base):
     """Represents a continent.
@@ -87,6 +109,10 @@ class Continent(Base):
         "continent_id", INTEGER, primary_key=True, autoincrement=True
     )
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
+
+    countries: Mapped[list[Country]] = relationship(
+        secondary=country_continent, back_populates="continents"
+    )
 
     @override
     def __str__(self) -> str:
@@ -195,7 +221,9 @@ class Language(Base):
     )
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
 
-    countries: Mapped[list[Country]] = relationship(back_populates="language")
+    countries: Mapped[list[Country]] = relationship(
+        secondary=country_language, back_populates="languages"
+    )
 
     @override
     def __str__(self) -> str:
@@ -229,7 +257,9 @@ class Currency(Base):
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
     symbol: Mapped[str] = mapped_column("symbol", VARCHAR(10), nullable=False)
 
-    countries: Mapped[list[Country]] = relationship(back_populates="currency")
+    countries: Mapped[list[Country]] = relationship(
+        secondary=country_currency, back_populates="currencies"
+    )
 
     @override
     def __str__(self) -> str:
@@ -237,7 +267,7 @@ class Currency(Base):
 
     @override
     def __repr__(self) -> str:
-        return f"Currency(id={repr(self.id)}, name={repr(self.name)})"
+        return f"Currency(id={repr(self.id)}, name={repr(self.name)}, symbol={repr(self.symbol)})"
 
 
 @final
@@ -254,7 +284,6 @@ class Country(Base):
         flag (`str`): The emoji flag of the country.
         population (`int`): The population of the country.
         currency_id (`int`): The foreign key referencing the country's currency.
-        language_id (`int`): The foreign key referencing the country's primary language.
         googlemaps (`str`): The URL to the country's location on Google Maps.
         openstreetmaps (`str`): The URL to the country's location on OpenStreetMap.
         subregion_id (`int | None`): The foreign key referencing the country's subregion.
@@ -280,20 +309,6 @@ class Country(Base):
     tld: Mapped[str] = mapped_column("tld", VARCHAR(10), nullable=False)
     flag: Mapped[str] = mapped_column("flag", VARCHAR(10), nullable=False)
     population: Mapped[int] = mapped_column("population", INTEGER, nullable=False)
-    currency_id: Mapped[int] = mapped_column(
-        "currency",
-        INTEGER,
-        ForeignKey("currencies.currency_id", onupdate="CASCADE", ondelete="RESTRICT"),
-        nullable=False,
-    )
-    currency: Mapped[Currency] = relationship(back_populates="countries")
-    language_id: Mapped[int] = mapped_column(
-        "language_id",
-        INTEGER,
-        ForeignKey("languages.language_id", onupdate="CASCADE", ondelete="RESTRICT"),
-        nullable=False,
-    )
-    language: Mapped[Language] = relationship(back_populates="countries")
     googlemaps: Mapped[str] = mapped_column("googlemaps", TEXT, nullable=False)
     openstreetmaps: Mapped[str] = mapped_column("openstreetmaps", TEXT, nullable=False)
     subregion_id: Mapped[int | None] = mapped_column(
@@ -306,6 +321,16 @@ class Country(Base):
     )
     subregion: Mapped[Subregion] = relationship(back_populates="countries")
     locations: Mapped[list[Location]] = relationship(back_populates="country")
+
+    continents: Mapped[list[Continent]] = relationship(
+        secondary=country_continent, back_populates="countries"
+    )
+    currencies: Mapped[list[Currency]] = relationship(
+        secondary=country_currency, back_populates="countries"
+    )
+    languages: Mapped[list[Language]] = relationship(
+        secondary=country_language, back_populates="countries"
+    )
 
     @override
     def __str__(self) -> str:
@@ -322,7 +347,6 @@ class Country(Base):
             f"tld={repr(self.tld)}, "
             f"flag={repr(self.flag)}, "
             f"population={repr(self.population)}, "
-            f"currency_id={repr(self.currency_id)}, "
             f"googlemaps={repr(self.googlemaps)}, "
             f"openstreetmaps={repr(self.openstreetmaps)}, "
             f"subregion_id={repr(self.subregion_id)}"
@@ -331,6 +355,126 @@ class Country(Base):
 
     def get_region(self) -> Region:
         return self.subregion.region
+
+
+# @final
+# class CountryContinent(Base):
+#     __tablename__ = "countries_continents"
+#
+#     id: Mapped[int] = mapped_column(
+#         "country_continent_id", INTEGER, primary_key=True, autoincrement=True
+#     )
+#     country_id: Mapped[int] = mapped_column(
+#         "country_id",
+#         INTEGER,
+#         ForeignKey(
+#             "countries.country_id",
+#             onupdate="CASCADE",
+#             ondelete="CASCADE",
+#         ),
+#         nullable=False,
+#     )
+#     country: Mapped[Country] = relationship(back_populates="country_continents")
+#
+#     continent_id: Mapped[int] = mapped_column(
+#         "continent_id",
+#         INTEGER,
+#         ForeignKey(
+#             "continents.continent_id",
+#             onupdate="CASCADE",
+#             ondelete="CASCADE",
+#         ),
+#         nullable=False,
+#     )
+#     continent: Mapped[Continent] = relationship(back_populates="continent_countries")
+#
+#     is_favorite: Mapped[bool] = mapped_column(
+#         "is_favorite",
+#         BOOLEAN,
+#         nullable=False,
+#         default=False,
+#         server_default=sql.text("0"),
+#     )
+
+
+# @final
+# class CountryCurrency(Base):
+#     __tablename__ = "countries_currencies"
+#
+#     id: Mapped[int] = mapped_column(
+#         "country_currency_id", INTEGER, primary_key=True, autoincrement=True
+#     )
+#     country_id: Mapped[int] = mapped_column(
+#         "country_id",
+#         INTEGER,
+#         ForeignKey(
+#             "countries.country_id",
+#             onupdate="CASCADE",
+#             ondelete="CASCADE",
+#         ),
+#         nullable=False,
+#     )
+#     country: Mapped[Country] = relationship(back_populates="country_currencies")
+#
+#     currency_id: Mapped[int] = mapped_column(
+#         "currency_id",
+#         INTEGER,
+#         ForeignKey(
+#             "currencies.currency_id",
+#             onupdate="CASCADE",
+#             ondelete="CASCADE",
+#         ),
+#         nullable=False,
+#     )
+#     currency: Mapped[Currency] = relationship(back_populates="currency_countries")
+#
+#     is_favorite: Mapped[bool] = mapped_column(
+#         "is_favorite",
+#         BOOLEAN,
+#         nullable=False,
+#         default=False,
+#         server_default=sql.text("0"),
+#     )
+#
+#
+# @final
+# class CountryLanguage(Base):
+#     __tablename__ = "countries_languages"
+#
+#     id: Mapped[int] = mapped_column(
+#         "country_language_id", INTEGER, primary_key=True, autoincrement=True
+#     )
+#     country_id: Mapped[int] = mapped_column(
+#         "country_id",
+#         INTEGER,
+#         ForeignKey(
+#             "countries.country_id",
+#             onupdate="CASCADE",
+#             ondelete="CASCADE",
+#         ),
+#         nullable=False,
+#     )
+#     country: Mapped[Country] = relationship(back_populates="country_languages")
+#
+#     language_id: Mapped[int] = mapped_column(
+#         "language_id",
+#         INTEGER,
+#         ForeignKey(
+#             "languages.language_id",
+#             onupdate="CASCADE",
+#             ondelete="CASCADE",
+#         ),
+#         nullable=False,
+#     )
+#     language: Mapped[Language] = relationship(back_populates="language_countries")
+#
+#     is_favorite: Mapped[bool] = mapped_column(
+#         "is_favorite",
+#         BOOLEAN,
+#         nullable=False,
+#         default=False,
+#         server_default=sql.text("0"),
+#     )
 
 
 @final

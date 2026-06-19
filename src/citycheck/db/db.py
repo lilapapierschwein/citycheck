@@ -31,7 +31,7 @@ class SqliteDB:
         return next(self.Session)
 
     def _create_session_generator(self) -> Generator[Session]:
-        session = self._session_factoy()
+        session = self._session_factory()
         try:
             yield session
         finally:

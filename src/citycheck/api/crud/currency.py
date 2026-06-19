@@ -4,6 +4,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
+from citycheck.api.filters_forms.currencies import CurrencyQueryFilters
 from citycheck.api.models.currency import CurrencyCreate
 from citycheck.db.models import Currency
 
@@ -32,8 +33,11 @@ async def read_currency(currency_id: int, session: Session) -> Currency:
     return session.get_one(Currency, currency_id)
 
 
-async def read_currencies(session: Session) -> Sequence[Currency]:
-    return session.scalars(select(Currency)).all()
+async def read_currencies(
+    session: Session, filters: CurrencyQueryFilters
+) -> Sequence[Currency]:
+    stmt = filters.apply(select(Currency))
+    return session.scalars(stmt).all()
 
 
 # def update_currency(currency_id: int, session: Session) -> Currency: ...

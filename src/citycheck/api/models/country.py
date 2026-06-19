@@ -2,6 +2,7 @@ from typing import ClassVar, override
 
 from pydantic import BaseModel, ConfigDict, computed_field, model_serializer
 
+from citycheck.api.models.continent import ContinentModel
 from citycheck.api.models.currency import CurrencyModel
 from citycheck.api.models.language import LanguageModel
 
@@ -15,8 +16,6 @@ class CountryCreate(BaseModel):
     flag: str
     area: float
     population: int
-    currency_id: int
-    language_id: int
     tld: str
     googlemaps: str
     openstreetmaps: str
@@ -52,15 +51,15 @@ class CountryModel(BaseModel):
     flag: str
     area: float
     population: int
-    currency_id: int
-    currency: CurrencyModel
-    language_id: int
-    language: LanguageModel
     tld: str
     googlemaps: str
     openstreetmaps: str
     subregion_id: int | None
     subregion: SubregionSchema | None
+
+    continents: list[ContinentModel]
+    currencies: list[CurrencyModel]
+    languages: list[LanguageModel]
 
     model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
 
@@ -79,8 +78,6 @@ class CountryModel(BaseModel):
             f"flag={repr(self.flag)}, "
             f"area={repr(self.area)}, "
             f"population={repr(self.population)}, "
-            f"currency_id={repr(self.currency_id)}, "
-            f"language={repr(self.language_id)}, "
             f"tld={repr(self.tld)}, "
             f"googlemaps={repr(self.googlemaps)}, "
             f"openstreetmaps={repr(self.openstreetmaps)}, "
@@ -107,10 +104,11 @@ class CountrySchema(CountryModel):
             "flag": self.flag,
             "area": self.area,
             "population": self.population,
-            "currency": self.currency,
-            "language": self.language,
             "tld": self.tld,
             "googlemaps": self.googlemaps,
             "openstreetmaps": self.openstreetmaps,
             "regions": {"region": self.region, "subregion": self.subregion},
+            "continents": self.continents,
+            "currencies": self.currencies,
+            "languages": self.languages,
         }
