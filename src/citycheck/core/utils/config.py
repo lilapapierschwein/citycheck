@@ -154,14 +154,21 @@ class AppConfig(BaseModel):
     api: ApiConfig
 
 
-def find_config_file(pattern: str) -> Path:
-    cfg_file: Path | None = None
-    for p in Path.cwd().rglob(pattern=pattern):
-        cfg_file = p
-        break
-    if not cfg_file:
-        raise RuntimeError(f"Unable to locate config file {repr(pattern)}")
-    return cfg_file
+def find_config_file(pattern: str, allow_multiple: bool = False) -> Path:
+    candidates: list[Path] = list(Path.cwd().rglob(pattern=pattern))
+    # for p in Path.cwd().rglob(pattern=pattern):
+    #     cfg_file = p
+    #     break
+    if not candidates:
+        raise RuntimeError(f"No config file found matching pattern {repr(pattern)}.")
+    if candidates and len(candidates) != 1:
+        if allow_multiple:
+            return candidates[0]
+        raise RuntimeError(
+            f"Multiple config files found matching pattern {repr(pattern)}: {[str(p) for p in candidates]}.\n"
+            + "Make sure there is only one config file matching the pattern in the CWD and/or its subdirectories."
+        )
+    return candidates[0]
 
 
 def load_app_config(file: Path) -> AppConfigBase:
@@ -169,8 +176,8 @@ def load_app_config(file: Path) -> AppConfigBase:
     return AppConfigBase.model_validate(cfg_data)
 
 
-def get_app_config_base(filename: str) -> AppConfigBase:
-    file = find_config_file(filename)
+def get_app_config_base(filename: str, allow_multiple: bool = False) -> AppConfigBase:
+    file = find_config_file(filename, allow_multiple=allow_multiple)
     return load_app_config(file)
 
 
@@ -190,6 +197,18 @@ def get_app_config(base: AppConfigBase) -> AppConfig:
     return AppConfig(general=base.general, files=app_files, api=base.api)
 
 
-def load_config(filename: str) -> AppConfig:
-    base_config = get_app_config_base(filename)
+def load_config(filename: str, allow_multiple: bool = False) -> AppConfig:
+    """Load the app config from a file and return an AppConfig instance.
+
+    Args:
+        filename (`str`): The name of the configuration file to load.
+        allow_multiple (`bool`): If True, allows multiple config files to match the pattern. This will result in the
+                               first match being selected if more than 1 file is found. Defaults to False.
+    Returns:
+        `AppConfig`: An instance of AppConfig containing the loaded configuration.
+
+    Raises:
+        `RuntimeError`: If the configuration file cannot be found or loaded.
+    """
+    base_config = get_app_config_base(filename, allow_multiple)
     return get_app_config(base_config)

@@ -7,8 +7,6 @@ from citycheck.settings import APP_CONFIG
 
 API_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 
-# args = parse_args()
-
 
 def get_app(
     api_routers: list[APIRouter],
@@ -36,6 +34,7 @@ app = get_app(**ROUTERS, **API_CONFIG)
 
 
 def main() -> None:
+
     uvicorn.run(
         app="main:app",
         app_dir=str(APP_CONFIG.files.paths.root / "src" / "citycheck" / "api"),

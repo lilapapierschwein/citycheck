@@ -128,6 +128,26 @@ def create_dev_parser(
         help="target directory. (default: src/)",
     )
 
+    db_backup_parser = dev_cmds.add_parser("db-backup")
+    _ = db_backup_parser.add_argument(
+        "-r", "--remove-existing", action="store_true", help="Delete other existing backups."
+    )
+    _ = db_backup_parser.add_argument(
+        "-n", "--name", type=str, help="set a custom name for the backup file."
+    )
+    _ = db_backup_parser.add_argument(
+        "-d",
+        "--dir",
+        type=Path,
+        help="select custom directory for the backup file. (default: ./data/backups/db)",
+    )
+    _ = db_backup_parser.add_argument(
+        "-f",
+        "--file",
+        type=Path,
+        help="specify the db file to backup. (default: ./data/<APPNAME>.db)",
+    )
+
     return dev_parser
 
 

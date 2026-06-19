@@ -47,16 +47,27 @@ def shutdown_api() -> None:
 
 
 def create_db_backup(
-    db_file: Path = APP_CONFIG.files.paths.db, suffix: Literal[".bak"] | None = ".bak"
+    db_file: Path = APP_CONFIG.files.paths.db,
+    backup_dir: Path = APP_CONFIG.files.dirs.backups / "db",
+    backup_name: str | None = None,
+    suffix: Literal[".bak"] | None = ".bak",
+    remove_existing: bool = False,
 ) -> Path | None:
     try:
         _ = validate_file(db_file)
-        backup_dir = db_file.parent / "backups" / "db"
         if not backup_dir.exists():
             backup_dir.mkdir(parents=True, exist_ok=True)
 
+        if remove_existing:
+            root = APP_CONFIG.files.paths.root
+            for f in backup_dir.iterdir():
+                if f.is_file() and ".db" in f.name and (suffix and (f.suffix == suffix)):
+                    f.unlink()
+                    print(f"file removed: ./{f.relative_to(root)}")
+
         ts = re.sub(r"[-:]", "", get_current_datetime(microseconds=False).isoformat())
-        backup_file_path = backup_dir / f"{db_file.stem}_{ts}{db_file.suffix}{suffix or ''}"
+        name = backup_name or f"{db_file.stem}_{ts}"
+        backup_file_path = backup_dir / f"{name}{db_file.suffix}{suffix or ''}"
         backup_file = db_file.copy(backup_file_path)
 
         if not backup_file.exists():
