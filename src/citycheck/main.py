@@ -8,6 +8,7 @@ from pathlib import Path
 from pprint import pprint
 from typing import Any
 
+from pydantic_core.core_schema import dict_schema
 import requests
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
@@ -18,10 +19,14 @@ from citycheck.api.models.continent import ContinentCreate
 from citycheck.api.models.country import CountrySchema
 from citycheck.api.models.location import LocationCreate
 from citycheck.api.models.user import UserCreate, UserModel
+from citycheck.api.routers.api import continents
 from citycheck.core.requests.get import get_request
-from citycheck.core.requests.sources import GEOCODING_API, SourceAPI
-from citycheck.core.setup import insert_initial_data
-from citycheck.core.utils import load_json
+from citycheck.core.requests.sources import (
+    GEOCODING_API,
+    RESTCOUNTRIES_API_AUTH,
+    SourceAPI,
+)
+from citycheck.core.utils import load_json, save_json
 from citycheck.db.db import SqliteDB, init_db
 from citycheck.db.models import (
     Continent,
@@ -33,7 +38,7 @@ from citycheck.db.models import (
     Subregion,
     User,
 )
-from citycheck.settings import DATA_DIR, ROOT
+from citycheck.settings import DATA_DIR, INIT_DATA_FILE, ROOT
 
 
 def get_location_data(name: str, api: SourceAPI) -> Any:
@@ -221,6 +226,11 @@ def save_location(data: dict[str, Any], session: Session) -> None:
 
 
 def run() -> None:
+    run_setup(rebuild_db=True, update_init_data=True)
+
+    # get_initial_data()
+    # return
+
     # de = get_request(RESTCOUNTRIES_API_CODE, uid="de")[0]
     # pprint(de["translations"]["deu"])
 
@@ -246,22 +256,22 @@ def run() -> None:
     #     "email": "testuser@example.com",
     # }
 
-    db = init_db()
-    with db.get_session() as Session:
-        # save_location(le, Session)
-        # insert_initial_data(DATA_DIR / "initial_data.json", Session)
-        # insert_continents(ROOT / "continents.json", Session)
-        # insert_regions_subregions(ROOT / "subregions.json", Session)
-        # insert_languages(ROOT / "languages.json", Session)
-        # insert_currencies(ROOT / "currencies.json", Session)
-        # insert_countries(ROOT / "countries.json", Session)
-
-        result = Session.scalar(select(Country).where(Country.id == 232))
-        if not result:
-            print("MEH")
-            return None
-        de = CountrySchema.model_validate(result)
-        print(de.model_dump_json())
+    # db = init_db()
+    # with db.get_session() as Session:
+    #     #     # save_location(le, Session)
+    #     insert_initial_data(INIT_DATA_FILE, Session)
+    #     # insert_continents(ROOT / "continents.json", Session)
+    #     # insert_regions_subregions(ROOT / "subregions.json", Session)
+    #     # insert_languages(ROOT / "languages.json", Session)
+    #     # insert_currencies(ROOT / "currencies.json", Session)
+    #     # insert_countries(ROOT / "countries.json", Session)
+    #
+    #     result = Session.scalar(select(Country).where(Country.id == 232))
+    #     if not result:
+    #         print("MEH")
+    #         return None
+    #     de = CountrySchema.model_validate(result)
+    #     print(de.model_dump_json())
     #
     #     try:
     #         user = read_user(1, Session)

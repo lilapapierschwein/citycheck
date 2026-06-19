@@ -6,6 +6,54 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationEr
 from .location import LocationModel
 
 
+class UserPasswordCreate(BaseModel):
+    user_id: int
+    password: str
+    is_valid: bool = Field(default=True)
+
+    @override
+    def __str__(self) -> str:
+        return self.password
+
+    @override
+    def __repr__(self) -> str:
+        return (
+            "UserPasswordCreate("
+            f"user_id={repr(self.user_id)}, "
+            f"password={repr(self.password)}, "
+            f"is_valid={repr(self.is_valid)}"
+            ")"
+        )
+
+
+class UserPasswordModel(BaseModel):
+    id: int
+    user_id: int
+    password_hash: str
+    is_valid: bool
+    user: UserModel
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
+
+    @override
+    def __str__(self) -> str:
+        return self.password_hash
+
+    @override
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}("
+            f"id={repr(self.id)}, "
+            f"user_id={repr(self.user_id)}, "
+            f"password_hash={repr(self.password_hash)}, "
+            f"is_valid={repr(self.is_valid)}"
+            ")"
+        )
+
+
+class UserPasswordSchema(UserPasswordModel): ...
+
+
 def validate_email(u: object) -> str:
     if not isinstance(u, str) or u == "":
         raise ValidationError("E-Mail must be a non-empty string.")
@@ -20,6 +68,8 @@ ValidEmail = Annotated[str, BeforeValidator(validate_email)]
 class UserCreate(BaseModel):
     username: str
     email: ValidEmail
+    is_disabled: bool = Field(default=False)
+    is_deleted: bool = Field(default=False)
     home_location_id: int | None = Field(default=None)
 
     model_config: ClassVar[ConfigDict] = ConfigDict(arbitrary_types_allowed=True)
@@ -34,6 +84,8 @@ class UserCreate(BaseModel):
             "UserCreate("
             f"username={repr(self.username)}, "
             f"email={repr(self.email)}, "
+            f"is_disabled={repr(self.is_disabled)}, "
+            f"is_deleted={repr(self.is_deleted)}, "
             f"home_location_id={repr(self.username)}"
             ")"
         )
@@ -43,7 +95,9 @@ class UserModel(BaseModel):
     id: int
     username: str
     email: ValidEmail
-    home_location_id: int | None = Field(default=None)
+    is_disabled: bool
+    is_deleted: bool
+    home_location_id: int | None
     home_location: LocationModel | None
 
     model_config: ClassVar[ConfigDict] = ConfigDict(
@@ -61,6 +115,8 @@ class UserModel(BaseModel):
             f"id={repr(self.id)}, "
             f"username={repr(self.username)}, "
             f"email={repr(self.email)}, "
+            f"is_disabled={repr(self.is_disabled)}, "
+            f"is_deleted={repr(self.is_deleted)}, "
             f"home_location_id={repr(self.username)}"
             ")"
         )
