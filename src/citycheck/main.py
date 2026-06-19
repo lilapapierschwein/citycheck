@@ -1,4 +1,4 @@
-from citycheck.core.cli import run_cli
+from citycheck.core.cli.main import run_cli
 
 
 def main() -> None:

@@ -31,18 +31,34 @@ class DefaultConfigs(TypedDict):
     api: APIDefaults
 
 
-class AppConfig(BaseModel):
+class FileConfig(BaseModel):
     data_dir: str = Field(pattern=r"^[-a-zA-Z0-9_]+$", validation_alias="data_dir_name")
     init_data_file: str = Field(
         pattern=r"^[-a-zA-Z0-9_]+\.json$", validation_alias="init_data_file_name"
     )
     dotenv_file: str = Field(pattern=r"^[-a-zA-Z0-9_]?\.env$", validation_alias="dotenv_file_name")
-    default_api_version: str = Field(pattern=r"^[0-9]+(\.{1}[0-9]+){0,2}$", default="1")
-    default_api_port: int = Field(ge=3000, le=9999, default=8000)
+
+
+class APIConfig(BaseModel):
+    default_version: str = Field(pattern=r"^[0-9]+(\.{1}[0-9]+){0,2}$", default="1")
+    default_port: int = Field(ge=3000, le=9999, default=8000)
+
+
+class AppConfig(BaseModel):
+    files: FileConfig
+    api: APIConfig
+
+    # data_dir: str = Field(pattern=r"^[-a-zA-Z0-9_]+$", validation_alias="data_dir_name")
+    # init_data_file: str = Field(
+    #     pattern=r"^[-a-zA-Z0-9_]+\.json$", validation_alias="init_data_file_name"
+    # )
+    # dotenv_file: str = Field(pattern=r"^[-a-zA-Z0-9_]?\.env$", validation_alias="dotenv_file_name")
+    # default_api_version: str = Field(pattern=r"^[0-9]+(\.{1}[0-9]+){0,2}$", default="1")
+    # default_api_port: int = Field(ge=3000, le=9999, default=8000)
 
     @property
     def defaults(self) -> DefaultConfigs:
-        return {"api": {"version": self.default_api_version, "port": self.default_api_port}}
+        return {"api": {"version": self.api.default_version, "port": self.api.default_port}}
 
 
 def load_toml_data(file: Path) -> Any:

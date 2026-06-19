@@ -1,9 +1,12 @@
 import json
 import re
+from argparse import Namespace
 from dataclasses import dataclass
 from datetime import datetime as dt
 from pathlib import Path
 from typing import Literal, TypedDict, override
+
+from citycheck.settings import APP_NAME, ROOT, SRC_DIR
 
 
 class LCPathDict(TypedDict):
@@ -106,7 +109,7 @@ class LineCountResult:
         }
 
     def as_json(self) -> str:
-        return json.dumps(self.as_dict())
+        return json.dumps(self.as_dict(), ensure_ascii=False, indent=2)
 
     def get_max_extension_len(self) -> int:
         return max(len(ext) for ext in self.lines_by_extension)
@@ -122,6 +125,62 @@ class LineCountResult:
         if not self.ignored_files:
             return "-"
         return "\n" + "\n".join(f"    '{file}'" for file in self.ignored_files)
+
+
+@dataclass
+class LinesCounter:
+    root: Path
+    pattern: re.Pattern[str]
+    ignore_files: list[str] | None = None
+    project_root: Path | None = None
+    ignore_empty_lines: bool = True
+    project_name: str | None = None
+    result: LineCountResult | None = None
+
+    def __call__(self) -> LineCountResult:
+        """Counts the number of lines of code in files matching the given pattern, ignoring specified files.
+
+        Args:
+            root(`pathlib.Path`): The root directory to search for files.
+            pattern(`re.Pattern`[`str`]): A regular expression pattern to match file names.
+            ignore_files(`list`[`str`]): A list of file names to ignore.
+
+        Returns:
+            `:class:LineCountResult`: An object containing the total line count, line count by file extension,
+                             and other relevant information.
+        """
+        lines_by_extension: dict[str, int] = {}
+        total_lines = 0
+
+        for file in self.root.rglob("*"):
+            if file.is_file() and self.pattern.search(file.name):
+                if self.ignore_files and file.name in self.ignore_files:
+                    continue
+                try:
+                    with file.open("r", encoding="utf-8", errors="ignore") as f:
+                        lines = (
+                            sum(1 for _ in f)
+                            if not self.ignore_empty_lines
+                            else sum(1 for line in f if line.strip())
+                        )
+                        total_lines += lines
+
+                        if file.suffix not in lines_by_extension:
+                            lines_by_extension[file.suffix] = 0
+                        lines_by_extension[file.suffix] += lines
+                except PermissionError, FileNotFoundError:
+                    continue
+        self.result = LineCountResult(
+            total_lines=total_lines,
+            lines_by_extension=lines_by_extension,
+            root=self.root,
+            pattern=self.pattern,
+            ignored_files=self.ignore_files,
+            project_root=self.project_root,
+            project_name=self.project_name,
+            ignore_empty_lines=self.ignore_empty_lines,
+        )
+        return self.result
 
 
 def count_lines_of_code(
@@ -140,10 +199,10 @@ def count_lines_of_code(
         ignore_files(`list`[`str`]): A list of file names to ignore.
 
     Returns:
-        A tuple containing:
-            - `int`: The total number of lines of code across all matching files.
-            - `dict`[`str`, `int`]: A dictionary mapping file extensions to their respective line counts.
+        `:class:LineCountResult`: An object containing the total line count, line count by file extension,
+                         and other relevant information.
     """
+
     lines_by_extension: dict[str, int] = {}
     total_lines = 0
 
@@ -176,3 +235,46 @@ def count_lines_of_code(
         project_name=project_name,
         ignore_empty_lines=ignore_empty_lines,
     )
+
+
+def count_lines_cli(args: Namespace) -> None:
+    filetypes: list[str] | None = args.filetypes
+    if not filetypes:
+        raise AttributeError("No filetypes for counting specified.")
+    filetypes = [ft.strip(".") for ft in filetypes]
+
+    count_lines = LinesCounter(
+        root=(args.path or SRC_DIR).absolute(),
+        pattern=re.compile(rf"\.({'|'.join(filetypes)})$"),
+        ignore_files=args.ignore,
+        project_root=ROOT,
+        project_name=APP_NAME,
+        ignore_empty_lines=not args.include_empty_lines,
+    )
+
+    mode: Literal["plain", "json"] = args.mode or "plain"
+    output: Path | Literal["stdout"] = args.output or "stdout"
+    result = count_lines()
+    result_out = str(result) if mode == "plain" else result.as_json()
+
+    if isinstance(output, str) and output == "stdout":
+        print(result_out)
+        return None
+
+    output_filetypes = {"plain": [".txt", ".md"], "json": [".json"]}
+    if output.suffix not in output_filetypes[mode]:
+        raise ValueError(
+            f"Invalid filetype: {output.suffix!r}. "
+            + f"{mode!r}-style output must be stored as {', '.join(output_filetypes[mode])}."
+        )
+    file = output.resolve()
+    if not file.exists() and not file.parent.exists():
+        print(f"Directory not found at {file.parent!r}")
+        user_confirm = input("Do you want to create it with all parents? [Y/n]: ").strip().lower()
+        if user_confirm in ("n", "no"):
+            print(result)
+            return None
+        file.parent.mkdir(parents=True, exist_ok=True)
+    with file.open("w", encoding="utf-8") as f:
+        _ = f.write(result_out)
+    print(f"Lines count saved to file {repr(str(file))}.")

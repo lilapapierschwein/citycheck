@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-citycheck = "citycheck:main"
+citycheck = "citycheck.core.cli.main:main"
 citycheck-api = "citycheck.api.main:main"
 citycheck-setup = "citycheck.core.setup:main"
 
