@@ -8,15 +8,13 @@ from pydantic import (
     model_serializer,
 )
 
-from .country import CountrySchema
+from citycheck.api.models.country import CountrySchema
 
 
 def validate_timezone(name: object) -> ZoneInfo:
     try:
         if not isinstance(name, (str, ZoneInfo)):
-            raise TypeError(
-                f"Timezone must of type `string` or `ZoneInfo`, not {type(name)}"
-            )
+            raise TypeError(f"Timezone must of type `string` or `ZoneInfo`, not {type(name)}")
         if isinstance(name, str):
             return ZoneInfo(name)
         return name
@@ -37,6 +35,8 @@ class LocationCreate(BaseModel):
     population: int
     timezone: TimeZone
     country_id: int
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
 
     @override
     def __str__(self) -> str:
@@ -101,5 +101,6 @@ class LocationSchema(LocationModel):
             "elevation": self.elevation,
             "population": self.population,
             "timezone": str(self.timezone),
+            "country_id": self.country_id,
             "country": self.country,
         }

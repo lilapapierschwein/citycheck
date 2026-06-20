@@ -100,7 +100,9 @@ class UserModel(BaseModel):
     home_location_id: int | None
     home_location: LocationModel | None
 
-    model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+    model_config: ClassVar[ConfigDict] = ConfigDict(
+        from_attributes=True, arbitrary_types_allowed=True
+    )
 
     @override
     def __str__(self) -> str:

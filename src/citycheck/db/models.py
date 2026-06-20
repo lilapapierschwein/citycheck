@@ -136,7 +136,9 @@ class Continent(Base):
     id: Mapped[int] = mapped_column("continent_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
 
-    countries: Mapped[list[Country]] = relationship(secondary=country_continent, back_populates="continents")
+    countries: Mapped[list[Country]] = relationship(
+        secondary=country_continent, back_populates="continents"
+    )
 
     @override
     def __str__(self) -> str:
@@ -231,7 +233,9 @@ class Language(Base):
     id: Mapped[int] = mapped_column("language_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
 
-    countries: Mapped[list[Country]] = relationship(secondary=country_language, back_populates="languages")
+    countries: Mapped[list[Country]] = relationship(
+        secondary=country_language, back_populates="languages"
+    )
 
     @override
     def __str__(self) -> str:
@@ -263,7 +267,9 @@ class Currency(Base):
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
     symbol: Mapped[str] = mapped_column("symbol", VARCHAR(10), nullable=False)
 
-    countries: Mapped[list[Country]] = relationship(secondary=country_currency, back_populates="currencies")
+    countries: Mapped[list[Country]] = relationship(
+        secondary=country_currency, back_populates="currencies"
+    )
 
     @override
     def __str__(self) -> str:
@@ -283,7 +289,7 @@ class Country(Base):
         name (`str`): The common name of the country.
         official_name (`str`): The official name of the country.
         code (`str`): The ISO 3166-1 alpha-2 code of the country.
-        area (`float`): The total area of the country in square kilometers.
+        area_sqkm (`float`): The total area of the country in square kilometers.
         tld (`str`): The top-level domain of the country.
         flag (`str`): The emoji flag of the country.
         population (`int`): The population of the country.
@@ -303,9 +309,11 @@ class Country(Base):
 
     id: Mapped[int] = mapped_column("country_id", INTEGER, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
-    official_name: Mapped[str] = mapped_column("official_name", VARCHAR(255), unique=True, nullable=False)
+    official_name: Mapped[str] = mapped_column(
+        "official_name", VARCHAR(255), unique=True, nullable=False
+    )
     code: Mapped[str] = mapped_column("code", VARCHAR(2), nullable=False)
-    area: Mapped[float] = mapped_column("area", REAL, nullable=False)
+    area_sqkm: Mapped[float] = mapped_column("area", REAL, nullable=False)
     tld: Mapped[str] = mapped_column("tld", VARCHAR(10), nullable=False)
     flag: Mapped[str] = mapped_column("flag", VARCHAR(10), nullable=False)
     population: Mapped[int] = mapped_column("population", INTEGER, nullable=False)
@@ -322,9 +330,15 @@ class Country(Base):
     subregion: Mapped[Subregion] = relationship(back_populates="countries")
     locations: Mapped[list[Location]] = relationship(back_populates="country")
 
-    continents: Mapped[list[Continent]] = relationship(secondary=country_continent, back_populates="countries")
-    currencies: Mapped[list[Currency]] = relationship(secondary=country_currency, back_populates="countries")
-    languages: Mapped[list[Language]] = relationship(secondary=country_language, back_populates="countries")
+    continents: Mapped[list[Continent]] = relationship(
+        secondary=country_continent, back_populates="countries"
+    )
+    currencies: Mapped[list[Currency]] = relationship(
+        secondary=country_currency, back_populates="countries"
+    )
+    languages: Mapped[list[Language]] = relationship(
+        secondary=country_language, back_populates="countries"
+    )
 
     @override
     def __str__(self) -> str:
@@ -543,7 +557,9 @@ class Location(Base):
 class UserLocation(Base):
     __tablename__ = "users_locations"
 
-    id: Mapped[int] = mapped_column("user_location_id", INTEGER, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(
+        "user_location_id", INTEGER, primary_key=True, autoincrement=True
+    )
     user_id: Mapped[int] = mapped_column(
         "user_id",
         INTEGER,

@@ -1,5 +1,6 @@
 from colorama import Fore, Style
 
+from citycheck.api.models.user import UserCreate
 from citycheck.db.db import init_db
 from citycheck.db.models import (
     User,
@@ -44,16 +45,16 @@ def run_setup(
             )
     if not filepaths.init_data.exists() or update_init_data:
         if verbose:
-            print("creating/updating init data...")
+            print("creating/updating init data...", end="\r")
         get_initial_data(init_data_file)
 
     print_headline("initializing database...", text_width)
 
     db = init_db(db_file)
     if verbose:
+        print(f"database initialized...{Fore.GREEN}DONE{Style.RESET_ALL}")
         if rebuild_db:
             print(f"database (re-)created at {db_file}...{Fore.GREEN}DONE{Style.RESET_ALL}")
-        print(f"database initialized...{Fore.GREEN}DONE{Style.RESET_ALL}")
 
     with db.get_session() as Session:
         insert_initial_data(
@@ -63,7 +64,9 @@ def run_setup(
         if insert_testuser:
             if verbose:
                 print("inserting testuser...", end="\r")
-            testuser = User(username="testuser", email="testuser@example.com")
+            testuser_data = {"username": "testuser", "email": "testuser@example.com"}
+            tu_validated = UserCreate.model_validate(testuser_data)
+            testuser = User(**tu_validated.model_dump())
             Session.add(testuser)
             Session.commit()
             if verbose:
