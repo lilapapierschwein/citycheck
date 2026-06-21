@@ -1,18 +1,18 @@
 from colorama import Fore, Style
 
+from citycheck import app_config
 from citycheck.api.models.user import UserCreate
 from citycheck.db.db import init_db
 from citycheck.db.models import (
     User,
 )
-from citycheck.settings import APP_CONFIG
 
 # from .cli import parse_args
 from .data import get_initial_data
 from .inserts import insert_initial_data
 from .utils import get_term_width, print_headline
 
-filepaths = APP_CONFIG.files.paths
+filepaths = app_config.paths.files
 
 
 def run_setup(

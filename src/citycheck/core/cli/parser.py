@@ -8,8 +8,8 @@ from argparse import (
 from collections.abc import Callable
 from pathlib import Path
 
+from citycheck import app_config
 from citycheck.core.utils import APIDefaults
-from citycheck.settings import APP_CONFIG
 
 PROG = "citycheck"
 VERSION = "0.1.0"
@@ -53,12 +53,17 @@ def create_setup_parser(
     return setup_parser
 
 
+api_defaults = APIDefaults(
+    version=app_config.api.versions.default, port=app_config.api.ports.default
+)
+
+
 def create_api_parser(
     parser: SubParserType,
-    name: str = "api",
-    prog: str = PROG,
-    version: str = VERSION,
-    defaults: APIDefaults = APP_CONFIG.api.defaults,
+    name: str = app_config.api.prefix,
+    prog: str = app_config.general.app_name,
+    version: str = app_config.general.version,
+    defaults: APIDefaults = api_defaults,
 ):
     api_parser = parser.add_parser(name)
 
@@ -123,7 +128,7 @@ def create_dev_parser(
     _ = loc_parser.add_argument(
         "path",
         type=Path,
-        default=APP_CONFIG.files.dirs.src,
+        default=app_config.paths.directories.src,
         nargs="?",
         help="target directory. (default: src/)",
     )

@@ -1,9 +1,9 @@
 import sys
 from typing import Any, Literal
 
+from citycheck import app_config
 from citycheck.core.setup.setup import run_setup
 from citycheck.core.utils.dev import count_lines_cli
-from citycheck.settings import APP_CONFIG
 
 from .parser import create_main_parser
 from .utils import create_db_backup, shutdown_api, start_api
@@ -39,11 +39,11 @@ def run_cli() -> None:
                 case "stop":
                     shutdown_api()
         case "dev":
-            dev_cmd: Literal["count-loc", "db-backup"] | None = parsed_args.dev_cmd
+            dev_cmd: Literal["count-lines", "db-backup"] | None = parsed_args.dev_cmd
             if not dev_cmd:
                 return None
             match dev_cmd:
-                case "count-loc":
+                case "count-lines":
                     count_lines_cli(parsed_args)
                 case "db-backup":
                     bak_data: dict[str, Any] = {
@@ -64,9 +64,7 @@ def run_cli() -> None:
                     if backup is None:
                         print("Backup failed.")
                         return
-                    print(
-                        f"Backup successful: ./{backup.relative_to(APP_CONFIG.files.paths.root)}"
-                    )
+                    print(f"Backup successful: ./{backup.relative_to(app_config.paths.root)}")
     return None
 
 

@@ -87,8 +87,13 @@ def format_timedelta(t: td) -> str:
 
 
 def get_project_root(
-    file: Path, root_markers: list[str], project_name: str, user_home: Path
+    root_markers: list[str],
+    file: Path | None = None,
+    project_name: str | None = None,
+    user_home: Path | None = None,
 ) -> Path:
+    file, user_home = file or Path.cwd(), user_home or Path.home()
+
     if file.is_dir() and (
         any((file / rm).exists() for rm in root_markers) or file.name == project_name
     ):

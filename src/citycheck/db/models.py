@@ -57,7 +57,7 @@ class User(Base):
     )
     home_location: Mapped[Location | None] = relationship(back_populates="users_homes")
     user_locations: Mapped[list[UserLocation]] = relationship(back_populates="user")
-    # passwords_hashes: Mapped[list[UserPassword]] = relationship(back_populates="user")
+    passwords_hashes: Mapped[list[UserPassword]] = relationship(back_populates="user")
 
     @override
     def __str__(self) -> str:
@@ -88,16 +88,16 @@ class User(Base):
     def favorites(self) -> list[Location]:
         return [loc.location for loc in self.user_locations if loc.is_favorite]
 
-    # @property
-    # def current_password(self) -> UserPassword:
-    #     passwd_hashes_active = [upw for upw in self.passwords_hashes if upw.is_valid]
-    #     if not passwd_hashes_active:
-    #         raise LookupError(f"No valid password found for user#{self.id}")
-    #     elif len(passwd_hashes_active) > 1:
-    #         raise LookupError(
-    #             f"Too many valid passwords found for user#{self.id} ({len(passwd_hashes_active)})"
-    #         )
-    #     return passwd_hashes_active[0]
+    @property
+    def current_password(self) -> UserPassword:
+        passwd_hashes_active = [upw for upw in self.passwords_hashes if upw.is_valid]
+        if not passwd_hashes_active:
+            raise LookupError(f"No valid password found for user#{self.id}")
+        elif len(passwd_hashes_active) > 1:
+            raise LookupError(
+                f"Too many valid passwords found for user#{self.id} ({len(passwd_hashes_active)})"
+            )
+        return passwd_hashes_active[0]
 
 
 country_continent = Table(
@@ -593,35 +593,35 @@ class UserLocation(Base):
     )
 
 
-# @final
-# class UserPassword(Base):
-#     __tablename__ = "users_passwords"
-#
-#     id: Mapped[int] = mapped_column(
-#         "user_password_id", INTEGER, primary_key=True, autoincrement=True
-#     )
-#     user_id: Mapped[int] = mapped_column(
-#         "user_id",
-#         INTEGER,
-#         ForeignKey(
-#             "users.user_id",
-#             onupdate="CASCADE",
-#             ondelete="RESTRICT",
-#         ),
-#         nullable=False,
-#     )
-#     user: Mapped[User] = relationship(back_populates="passwords_hashes")
-#
-#     password_hash: Mapped[int] = mapped_column(
-#         "password_hash",
-#         TEXT,
-#         nullable=False,
-#     )
-#
-#     is_valid: Mapped[bool] = mapped_column(
-#         "is_valid",
-#         BOOLEAN,
-#         nullable=False,
-#         default=True,
-#         server_default=sql.text("1"),
-#     )
+@final
+class UserPassword(Base):
+    __tablename__ = "users_passwords"
+
+    id: Mapped[int] = mapped_column(
+        "user_password_id", INTEGER, primary_key=True, autoincrement=True
+    )
+    user_id: Mapped[int] = mapped_column(
+        "user_id",
+        INTEGER,
+        ForeignKey(
+            "users.user_id",
+            onupdate="CASCADE",
+            ondelete="RESTRICT",
+        ),
+        nullable=False,
+    )
+    user: Mapped[User] = relationship(back_populates="passwords_hashes")
+
+    password_hash: Mapped[str] = mapped_column(
+        "password_hash",
+        TEXT,
+        nullable=False,
+    )
+
+    is_valid: Mapped[bool] = mapped_column(
+        "is_valid",
+        BOOLEAN,
+        nullable=False,
+        default=True,
+        server_default=sql.text("1"),
+    )

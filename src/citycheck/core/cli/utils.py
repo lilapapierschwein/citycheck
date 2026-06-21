@@ -3,10 +3,10 @@ from pathlib import Path
 from time import sleep
 from typing import Literal
 
+from citycheck import app_config
 from citycheck.api.main import main as api_main
 from citycheck.core.utils import get_current_datetime, validate_file
 from citycheck.core.utils.utils import api_is_running, init_api_shutdown
-from citycheck.settings import APP_CONFIG
 
 PROG = "citycheck"
 VERSION = "0.1.0"
@@ -47,8 +47,8 @@ def shutdown_api() -> None:
 
 
 def create_db_backup(
-    db_file: Path = APP_CONFIG.files.paths.db,
-    backup_dir: Path = APP_CONFIG.files.dirs.backups / "db",
+    db_file: Path = app_config.paths.files.db,
+    backup_dir: Path = app_config.paths.directories.db_backups,
     backup_name: str | None = None,
     suffix: Literal[".bak"] | None = ".bak",
     remove_existing: bool = False,
@@ -59,7 +59,7 @@ def create_db_backup(
             backup_dir.mkdir(parents=True, exist_ok=True)
 
         if remove_existing:
-            root = APP_CONFIG.files.paths.root
+            root = app_config.paths.root
             for f in backup_dir.iterdir():
                 if f.is_file() and ".db" in f.name and (suffix and (f.suffix == suffix)):
                     f.unlink()

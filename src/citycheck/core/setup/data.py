@@ -4,6 +4,7 @@ from typing import Any, TypedDict
 
 from colorama import Fore, Style
 
+from citycheck import app_config
 from citycheck.core.requests.get import get_request
 from citycheck.core.requests.sources import (
     RESTCOUNTRIES_API,
@@ -12,7 +13,6 @@ from citycheck.core.requests.sources import (
     SourceAPI,
 )
 from citycheck.core.utils import format_timedelta, load_json, save_json
-from citycheck.settings import APP_CONFIG
 
 from .utils import get_term_width, print_headline
 
@@ -83,7 +83,7 @@ def get_countries_data(
     return CountriesData(objects=objects, total=total, timestamp=int(dt.now().timestamp()))
 
 
-def get_initial_data(file: Path = APP_CONFIG.files.paths.init_data, verbose: bool = True):
+def get_initial_data(file: Path = app_config.paths.files.init_data, verbose: bool = True):
     if file.exists():
         now = dt.now()
         existing_data = load_json(file)
