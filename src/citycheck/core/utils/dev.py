@@ -89,7 +89,7 @@ class LineCountResult:
 
     def as_dict(self) -> LineCountResultDict:
         rel_path = (
-            str(self.root.relative_to(self.project_root.parent)) if self.project_root else "-"
+            f"./{str(self.root.relative_to(self.project_root))}" if self.project_root else "-"
         )
         return {
             "project": self.project_name or "N/A",

@@ -1,13 +1,10 @@
 import json
-import os
-import tomllib
 from datetime import datetime as dt
 from datetime import timedelta as td
 from pathlib import Path
 from typing import Any
 
 import requests
-from dotenv import load_dotenv
 from requests.exceptions import ConnectionError
 
 
@@ -21,13 +18,13 @@ def validate_file(file: Path, suffix: str | None = None) -> bool:
     return True
 
 
-def load_toml_data(file: Path) -> Any:
-    try:
-        _ = validate_file(file, suffix=".toml")
-        with file.open("rb") as f:
-            return tomllib.load(f)
-    except Exception as err:
-        print(f"Error loading file: {err}")
+# def load_toml_data(file: Path) -> Any:
+#     try:
+#         _ = validate_file(file, suffix=".toml")
+#         with file.open("rb") as f:
+#             return tomllib.load(f)
+#     except Exception as err:
+#         print(f"Error loading file: {err}")
 
 
 def load_json(file: Path) -> Any:
@@ -45,16 +42,6 @@ def save_json(file: Path, data: Any) -> None:
             json.dump(data, f, indent=2, ensure_ascii=False)
     except Exception as err:
         print(f"Error saving file: {err}")
-
-
-def get_env_var(name: str, dotenv_file: Path | None) -> str:
-    if dotenv_file:
-        _ = validate_file(dotenv_file)
-        _ = load_dotenv(dotenv_file)
-    v = os.getenv(name, None)
-    if v is None:
-        raise RuntimeError(f"Unable to load env var: {name!r}")
-    return v
 
 
 def get_current_datetime(microseconds: bool = True) -> dt:

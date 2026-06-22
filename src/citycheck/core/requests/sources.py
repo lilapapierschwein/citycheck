@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Literal
 
 from citycheck import app_config
-from citycheck.core.utils import get_env_var
 
 
 @dataclass
@@ -39,7 +38,4 @@ SEASONAL_FORECAST_API = SourceAPI("https://seasonal-api.open-meteo.com", "1", "s
 
 RESTCOUNTRIES_API = SourceAPI("https://api.restcountries.com/countries", "5")
 
-rc_api_token = get_env_var("RESTCOUNTRIES_API_KEY", app_config.paths.files.dotenv)
-if not rc_api_token:
-    raise RuntimeError("Unable to retreive restcountries api token")
-RESTCOUNTRIES_API_AUTH = APIAuth(token=rc_api_token)
+RESTCOUNTRIES_API_AUTH = APIAuth(token=app_config.secrets.restcountries_api)

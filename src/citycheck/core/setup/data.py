@@ -28,6 +28,9 @@ def get_countries_data(
     auth: APIAuth = RESTCOUNTRIES_API_AUTH,
     verbose: bool = True,
 ):
+    if auth.token.endswith("00example00"):
+        raise RuntimeError(f"invalid auth key for restcountries api: {auth.token!r}")
+
     # get total country count
     response = get_request(api=api, headers=auth.header, params={"limit": 1})
     total: int = response["data"]["meta"]["total"]

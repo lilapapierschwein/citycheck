@@ -1,3 +1,4 @@
+from .auth import router as auth_router
 from .continents import router as continents_router
 from .countries import router as countries_router
 from .currencies import router as currencies_router
@@ -18,4 +19,5 @@ __all__ = [
     "languages_router",
     "currencies_router",
     "misc_router",
+    "auth_router",
 ]

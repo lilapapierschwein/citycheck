@@ -1,7 +1,5 @@
-# from citycheck.core.cli.main import run_cli
-
-
 from citycheck.api.models.country import CountryCreate, CountryIn
+from citycheck.core.setup.utils import EnvFileGenerator
 from citycheck.db.db import init_db
 from citycheck.db.models import Country
 
@@ -79,9 +77,28 @@ def run_stuff() -> None:
         print("error:", err)
 
 
+# def format_validation_error(err: ValidationError) -> str:
+#     title, count, errors = err.title, err.error_count, err.errors()
+#     fmt: list[str] = [
+#         f"{'1 validation error' if count == 1 else f'{count} validation errors'} for {title}"
+#     ]
+#     for e in errors:
+#         loc = ":".join(e["loc"])
+#         fmt.append("")
+
+
 def main() -> None:
-    run_stuff()
-    # print(APP_CONFIG)
+    generate_env_file = EnvFileGenerator()
+    generate_env_file()
+
+    ...
+    # run_stuff()
+    # try:
+    #     config = Config()  # pyright: ignore[reportCallIssue]
+    #     print(config.security)
+    # except ValidationError as err:
+    #     print("error:", err)
+    # print(config, APP_CONFIG, sep="\n\n")
 
     # db = init_db()
     # with db.get_session() as Session:

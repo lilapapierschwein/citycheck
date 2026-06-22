@@ -1,18 +1,16 @@
 from fastapi import APIRouter, Request
+from fastapi.responses import RedirectResponse
 
-from citycheck.api.crud import read_user
-from citycheck.api.filters_forms.users import UserQueryFilters
-from citycheck.api.utils import CRUDSession, HxReq
+from citycheck.api.security import WebCurrentUser
+from citycheck.api.utils import HxReq
 from citycheck.web.templates import templates
 
 router = APIRouter(tags=["web"])
 
 
 @router.get("/settings")
-async def settings_page(
-    request: Request, session: CRUDSession, query_params: UserQueryFilters, is_hx: HxReq
-):
-    user = await read_user(1, session)
-
+async def settings_page(request: Request, current_user: WebCurrentUser, is_hx: HxReq):
+    if not current_user:
+        return RedirectResponse("/login", status_code=303)
     template = "settings/_user_data.html" if is_hx else "settings/index.html"
-    return templates.TemplateResponse(request, template, context={"user": user})
+    return templates.TemplateResponse(request, template, context={"user": current_user})

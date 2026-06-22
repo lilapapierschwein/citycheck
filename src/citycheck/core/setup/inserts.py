@@ -20,7 +20,7 @@ from citycheck.db.models import (
     Subregion,
 )
 
-from .utils import print_headline
+from .utils import ProgressBar, get_term_width, print_headline
 
 
 def insert_continents(data: list[str], session: Session, verbose: bool = True) -> None:
@@ -120,7 +120,6 @@ def get_country_data(json_data: dict[str, Any], session: Session) -> Country:
     country_in = CountryIn.model_validate(json_data)
     junctions = country_in.get_junctions(session)
 
-    print(country_in.model_dump())
     country_data = CountryCreate.model_validate(country_in.model_dump(), from_attributes=True)
     country = Country(**country_data.model_dump())
     with session.no_autoflush:
@@ -145,20 +144,58 @@ def get_country_data(json_data: dict[str, Any], session: Session) -> Country:
     return country
 
 
-def insert_countries(data: list[dict[str, Any]], session: Session, verbose: bool = True) -> None:
-    id_pad = len(str(len(data)))
-    print("inserting countries...", end="\r")
+# class ProgressBar:
+#     def __init__(
+#         self, total: int, scale: Literal[10, 20, 50, 100] = 50, char: Literal["#", "*"] = "#"
+#     ) -> None:
+#         self.total: int = total
+#         self.scale: int = scale
+#         self.char: str = char
+#
+#         self.bar_value: float = 100 / self.scale
+#         self.bar_empty: str = "." * self.scale
+#
+#     def __call__(self, c: int) -> str:
+#         percentage = self._get_percentage(c)
+#         bars_count = self._get_bars_count(percentage)
+#         bars = self._get_bars(bars_count)
+#         return f"[{self._get_current_bar(bars, bars_count)}]"
+#
+#     def _get_percentage(self, c: int | float) -> float:
+#         return (c / self.total) * 100
+#
+#     def _get_bars_count(self, p: float) -> int:
+#         return int(p // self.bar_value)
+#
+#     def _get_bars(self, c: int) -> str:
+#         return self.char * c
+#
+#     def _get_current_bar(self, b: str, c: int) -> str:
+#         return b + self.bar_empty[c:]
 
-    inserts: list[str] = []
-    for cj in data:
+
+def insert_countries(data: list[dict[str, Any]], session: Session, verbose: bool = True) -> None:
+    text_width = get_term_width()
+    total = len(data)
+    pad = len(str(total))
+    pbar = ProgressBar(total)
+
+    for i, cj in enumerate(data):
+        print(f"inserting countries...{pbar(i + 1)} ({str(i + 1).zfill(pad)}/{total})", end="\r")
         country = get_country_data(cj, session)
         session.add(country)
         session.commit()
-        inserts.append(f"INSERT: [country#{str(country.id).zfill(id_pad)}] {country}")
+        if verbose:
+            stmt = f"INSERT: [country#{str(country.id).zfill(pad)}] {country}"
+            print(
+                stmt + " " * (text_width - len(stmt)),
+            )
 
-    print(f"inserting countries...{Fore.GREEN}DONE{Style.RESET_ALL}")
-    if verbose:
-        print("\n".join(inserts))
+    print(
+        f"inserting countries...{pbar(total)} ({str(total).zfill(pad)}/{total})",
+        f"{Fore.GREEN}DONE{Style.RESET_ALL}",
+        sep="...",
+    )
 
 
 def insert_initial_data(
@@ -179,4 +216,4 @@ def insert_initial_data(
     insert_languages(objects["languages"], session, verbose)
     insert_currencies(objects["currencies"], session, verbose)
     insert_regions_subregions(objects["regions"], session, verbose)
-    insert_countries(objects["countries"], session, verbose)
+    insert_countries(objects["countries"], session)

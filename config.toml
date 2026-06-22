@@ -1,0 +1,37 @@
+[general]
+app_name = "citycheck"
+version = "0.0.0"
+
+[paths]
+root_markers = ["pyproject.toml", ".gitignore", ".venv"]
+
+[paths.directories]
+data = "data"
+backups = "data/backups"
+db_backups = "data/backups/db"
+src = "src"
+api = "src/citycheck/api"
+web = "src/web"
+static = "src/web/static"
+templates = "src/web/templates"
+
+[paths.files]
+config = "config.toml"
+db = "data/citycheck.db"
+init_data = "data/init_data.json"
+dotenv = ".env"
+
+[api]
+prefix = "api"
+
+[api.versions]
+available = ["1"]
+default = "1"
+
+[api.ports]
+min = 8000
+max = 8080
+default = 8000
+
+[api.settings]
+access_token_expire_minutes = 60

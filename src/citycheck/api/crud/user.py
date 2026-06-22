@@ -6,7 +6,7 @@ from sqlalchemy.sql import func, select
 
 from citycheck.api.filters_forms.users import UserQueryFilters
 from citycheck.api.models.user import UserCreate
-from citycheck.db.models import User
+from citycheck.db.models import User, UserPassword
 
 
 async def create_user(data: UserCreate, session: Session) -> User:
@@ -35,6 +35,29 @@ async def read_users(session: Session, filters: UserQueryFilters) -> tuple[Seque
     total = session.scalar(select(func.count()).select_from(User)) or 0
     stmt = filters.apply(select(User))
     return session.scalars(stmt).all(), total
+
+
+async def get_user_by_username(username: str, session: Session) -> User | None:
+    return session.scalar(select(User).where(User.username == username))
+
+
+async def set_password(user: User, password_hash: str, session: Session):
+    for pw in user.passwords_hashes:
+        if pw.is_valid:
+            pw.is_valid = False
+    # _ = session.execute(
+    #     update(UserPassword)
+    #     .where(and_(UserPassword.user_id == user.id, UserPassword.is_valid))
+    #     .values(is_valid=False)
+    # )
+
+    new_pw = UserPassword(user_id=user.id, password_hash=password_hash)
+    session.add(new_pw)
+    session.commit()
+    return new_pw
+
+
+async def verifiy_credentials(): ...
 
 
 # def update_user(user_id: int, session: Session) -> User: ...

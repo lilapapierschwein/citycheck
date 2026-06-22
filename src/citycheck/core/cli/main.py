@@ -69,7 +69,10 @@ def run_cli() -> None:
 
 
 def main() -> None:
-    run_cli()
+    try:
+        run_cli()
+    except RuntimeError as err:
+        print("error:", err)
 
 
 if __name__ == "__main__":

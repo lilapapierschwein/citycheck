@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "Manage and compare your favorite travel destinations"
 readme = "README.md"
 authors = [
-    { name = "lilapapierschwein", email = "kai.elsaesser@posteo.de" }
+    { name = "Kai Elsässer", email = "kai.elsaesser@posteo.de" }
 ]
 requires-python = ">=3.14"
 dependencies = [
@@ -26,8 +26,8 @@ Repository = "https://github.com/lilapapierschwein/citycheck"
 [project.scripts]
 citycheck = "citycheck.core.cli.main:main"
 cc-dev = "citycheck.main:main"
-citycheck-api = "citycheck.api.main:main"
-# citycheck-setup = "citycheck.core.setup:main"
+# api = "citycheck.api.main:main"
+# setup = "citycheck.core.setup:main"
 
 [build-system]
 requires = ["uv_build>=0.11.18,<0.12.0"]
@@ -45,4 +45,5 @@ line-length = 99
 indent-width = 4
 
 [tool.ruff.lint.extend-per-file-ignores]
-"__init__.py" = ["I001"]  # don't sort imports
+# don't sort imports
+"__init__.py" = ["I001"]
