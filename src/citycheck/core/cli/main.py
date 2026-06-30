@@ -1,15 +1,17 @@
 import sys
 from typing import Any, Literal
 
-from citycheck import app_config
+from citycheck import get_config
 from citycheck.core.setup.setup import run_setup
 from citycheck.core.utils.dev import count_lines_cli
 
 from .parser import create_main_parser
 from .utils import create_db_backup, shutdown_api, start_api
 
-PROG = "citycheck"
-VERSION = "0.1.0"
+app_config = get_config()
+
+PROG = app_config.app_name
+VERSION = app_config.version
 
 
 def run_cli() -> None:

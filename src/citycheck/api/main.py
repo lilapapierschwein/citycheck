@@ -2,8 +2,10 @@ import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from citycheck import app_config
+from citycheck import get_config
 from citycheck.api.routers import ROUTERS
+
+app_config = get_config()
 
 API_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 
@@ -11,7 +13,7 @@ API_CONFIG = {"title": "citycheck", "version": "0.1.0"}
 def get_app(
     api_routers: list[APIRouter],
     web_routers: list[APIRouter],
-    title: str = app_config.general.app_name,
+    title: str = app_config.app_name,
     version: str = "0.1.0",
     api_version: str = app_config.api.versions.default,
     api_router_name: str | None = "api",

@@ -5,9 +5,11 @@ from typing import override
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from citycheck import app_config
+from citycheck import get_config
 
 from .models import Base
+
+app_config = get_config()
 
 
 class SqliteDB:

@@ -1,6 +1,6 @@
 from colorama import Fore, Style
 
-from citycheck import app_config
+from citycheck import get_config
 from citycheck.api.models.user import UserCreate
 from citycheck.db.db import init_db
 from citycheck.db.models import (
@@ -12,6 +12,7 @@ from .data import get_initial_data
 from .inserts import insert_initial_data
 from .utils import get_term_width, print_headline
 
+app_config = get_config()
 filepaths = app_config.paths.files
 
 

@@ -6,8 +6,9 @@ from datetime import datetime as dt
 from pathlib import Path
 from typing import Literal, TypedDict, override
 
-from citycheck import app_config
+from citycheck import get_config
 
+app_config = get_config()
 paths = app_config.paths
 
 
@@ -250,7 +251,7 @@ def count_lines_cli(args: Namespace) -> None:
         pattern=re.compile(rf"\.({'|'.join(filetypes)})$"),
         ignore_files=args.ignore,
         project_root=paths.root,
-        project_name=app_config.general.app_name,
+        project_name=app_config.app_name,
         ignore_empty_lines=not args.include_empty_lines,
     )
 

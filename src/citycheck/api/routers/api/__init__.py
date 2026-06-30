@@ -8,11 +8,13 @@ from .misc import router as misc_router
 from .regions import regions_router as regions_router
 from .regions import subregions_router as subregions_router
 from .users import router as users_router
+from .users_locations import router as users_locations_router
 
 __all__ = [
     "locations_router",
     "continents_router",
     "users_router",
+    "users_locations_router",
     "countries_router",
     "subregions_router",
     "regions_router",

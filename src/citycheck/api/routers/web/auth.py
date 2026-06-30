@@ -29,6 +29,6 @@ async def login_submit(request: Request, session: CRUDSession):
 
 @router.get("/logout")
 async def logout():
-    response = RedirectResponse(url="/", status_code=303)
+    response = RedirectResponse(url="/login", status_code=303)
     response.delete_cookie("access_token")
     return response

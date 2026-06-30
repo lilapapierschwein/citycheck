@@ -1,21 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}citycheck{% endblock %}</title>
+  <title>{% if page_name %}{{ page_name | title }} | {% endif %}citycheck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="icon" href="/static/img/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/static/img/icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link href="static/css/style.css" rel="stylesheet" />
   <script src="/static/js/htmx.min.js" defer></script>
 </head>
 <body>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/weather">Weather</a>
-    <a href="/settings">Settings</a>
-  </nav>
-  <main>
-    {% block content %}{% endblock %}
-  </main>
+    <div id="wrapper">
+        <header>
+            {% block header %}{% endblock header %}
+        </header>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 </body>
 </html>
-
-

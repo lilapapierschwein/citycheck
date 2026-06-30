@@ -592,6 +592,10 @@ class UserLocation(Base):
         server_default=sql.text("0"),
     )
 
+    @override
+    def __str__(self) -> str:
+        return f"{self.location.name} ({self.user.username})"
+
 
 @final
 class UserPassword(Base):

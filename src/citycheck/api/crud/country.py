@@ -20,9 +20,7 @@ async def create_country(data: CountryCreate, session: Session) -> Country:
     return country
 
 
-async def create_countries(
-    data: list[CountryCreate], session: Session
-) -> list[Country]:
+async def create_countries(data: list[CountryCreate], session: Session) -> list[Country]:
     countries = [Country(**d.model_dump()) for d in data]
 
     session.add_all(countries)
@@ -33,6 +31,10 @@ async def create_countries(
 
 async def read_country(contry_id: int, session: Session) -> Country:
     return session.get_one(Country, contry_id)
+
+
+async def read_country_by_code(country_code: str, session: Session) -> Country | None:
+    return session.scalar(select(Country).where(Country.code == country_code))
 
 
 async def read_countries(

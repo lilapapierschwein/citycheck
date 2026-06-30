@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from typing import Literal
 
-from citycheck import app_config
+from citycheck import get_config
+
+app_config = get_config()
 
 
 @dataclass
@@ -37,5 +39,4 @@ HISTORICAL_WEATHER_API = SourceAPI("https://archive-api.open-meteo.com", "1", "a
 SEASONAL_FORECAST_API = SourceAPI("https://seasonal-api.open-meteo.com", "1", "seasonal")
 
 RESTCOUNTRIES_API = SourceAPI("https://api.restcountries.com/countries", "5")
-
 RESTCOUNTRIES_API_AUTH = APIAuth(token=app_config.secrets.restcountries_api)

@@ -13,10 +13,12 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_401_UNAUTHORIZED
 
-from citycheck import app_config
+from citycheck import get_config
 from citycheck.api.crud.user import get_user_by_username
 from citycheck.api.utils import CRUDSession, get_session
 from citycheck.db.models import User
+
+app_config = get_config()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -83,7 +85,7 @@ class CredentialsException(HTTPException):
 
 def decode_access_token(token: ByteStr) -> TokenData:
     try:
-        payload: dict[str, Any] = jwt.decode(token, JWT_SECRET_KEY, algorithm=JWT_ALGO)  # pyright: ignore[reportUnknownMemberType]
+        payload: dict[str, Any] = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGO])  # pyright: ignore[reportUnknownMemberType]
         username: Any | None = payload.get("sub")
         if username is None:
             raise CredentialsException

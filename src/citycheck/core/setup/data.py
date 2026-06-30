@@ -4,7 +4,7 @@ from typing import Any, TypedDict
 
 from colorama import Fore, Style
 
-from citycheck import app_config
+from citycheck import get_config
 from citycheck.core.requests.get import get_request
 from citycheck.core.requests.sources import (
     RESTCOUNTRIES_API,
@@ -15,6 +15,8 @@ from citycheck.core.requests.sources import (
 from citycheck.core.utils import format_timedelta, load_json, save_json
 
 from .utils import get_term_width, print_headline
+
+app_config = get_config()
 
 
 class CountriesData(TypedDict):

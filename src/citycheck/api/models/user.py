@@ -1,7 +1,14 @@
 import re
 from typing import Annotated, ClassVar, override
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError
+from pydantic import (
+    BaseModel,
+    BeforeValidator,
+    ConfigDict,
+    Field,
+    ValidationError,
+    model_serializer,
+)
 
 from .location import LocationModel
 
@@ -99,6 +106,11 @@ class UserModel(BaseModel):
     is_deleted: bool
     home_location_id: int | None
     home_location: LocationModel | None
+    user_locations: list[UserLocationModel]
+
+    @property
+    def is_active(self) -> bool:
+        return not self.is_disabled and not self.is_deleted
 
     model_config: ClassVar[ConfigDict] = ConfigDict(
         from_attributes=True, arbitrary_types_allowed=True
@@ -117,9 +129,70 @@ class UserModel(BaseModel):
             f"email={repr(self.email)}, "
             f"is_disabled={repr(self.is_disabled)}, "
             f"is_deleted={repr(self.is_deleted)}, "
-            f"home_location_id={repr(self.username)}"
+            f"home_location_id={repr(self.username)}, "
+            f"user_locations={repr(self.user_locations)}"
             ")"
         )
 
 
-class UserSchema(UserModel): ...
+class UserSchema(UserModel):
+    @model_serializer
+    def serialize_model(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "is_disabled": self.is_disabled,
+            "is_deleted": self.is_deleted,
+            "home_location": self.home_location,
+        }
+
+
+class UserLocationCreate(BaseModel):
+    user_id: int
+    location_id: int
+
+    @override
+    def __str__(self) -> str:
+        return f"Location #{self.location_id}, User #{self.user_id}"
+
+    @override
+    def __repr__(self) -> str:
+        return (
+            "UserLocationCreate("
+            f"user_id={repr(self.user_id)}, "
+            f"location_id={repr(self.location_id)}"
+            ")"
+        )
+
+
+class UserLocationModel(BaseModel):
+    id: int
+    user_id: int
+    location_id: int
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(
+        from_attributes=True, arbitrary_types_allowed=True
+    )
+
+    @override
+    def __str__(self) -> str:
+        return f"Location #{self.location_id}, User #{self.user_id}"
+
+    @override
+    def __repr__(self) -> str:
+        return (
+            "UserLocationModel("
+            f"user_id={repr(self.user_id)}, "
+            # f"user={repr(self.user)}, "
+            f"location_id={repr(self.location_id)}"
+            # f"location={repr(self.location)}"
+            ")"
+        )
+
+
+class UserLocationSchema(UserLocationModel):
+    ...
+    # @model_serializer
+    # def serialize_model(self):
+    #     return {"id": self.id, "user": self.user, "location": self.location}

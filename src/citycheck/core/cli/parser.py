@@ -8,11 +8,13 @@ from argparse import (
 from collections.abc import Callable
 from pathlib import Path
 
-from citycheck import app_config
+from citycheck import get_config
 from citycheck.core.utils import APIDefaults
 
-PROG = "citycheck"
-VERSION = "0.1.0"
+app_config = get_config()
+
+PROG = app_config.app_name
+VERSION = app_config.version
 
 
 type SubParserType = _SubParsersAction[ArgumentParser]
@@ -61,8 +63,8 @@ api_defaults = APIDefaults(
 def create_api_parser(
     parser: SubParserType,
     name: str = app_config.api.prefix,
-    prog: str = app_config.general.app_name,
-    version: str = app_config.general.version,
+    prog: str = app_config.app_name,
+    version: str = app_config.version,
     defaults: APIDefaults = api_defaults,
 ):
     api_parser = parser.add_parser(name)

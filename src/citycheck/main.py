@@ -1,7 +1,10 @@
-from citycheck.api.models.country import CountryCreate, CountryIn
-from citycheck.core.setup.utils import EnvFileGenerator
+import asyncio
+
+from citycheck import get_config
+from citycheck.api.crud import read_user
 from citycheck.db.db import init_db
-from citycheck.db.models import Country
+
+app_config = get_config()
 
 germany_data = {
     "names": {"common": "Germany", "official": "Federal Republic of Germany"},
@@ -65,16 +68,16 @@ antarctica = {
 }
 
 
-def run_stuff() -> None:
-    try:
-        country_in = CountryIn.model_validate(antarctica)
-        db = init_db()
-        with db.get_session() as Session:
-            _ = country_in.get_junctions(Session)
-        country_create = CountryCreate.model_validate(country_in.model_dump())
-        _ = Country(**country_create.model_dump())
-    except Exception as err:
-        print("error:", err)
+# def run_stuff() -> None:
+#     try:
+#         country_in = CountryIn.model_validate(antarctica)
+#         db = init_db()
+#         with db.get_session() as Session:
+#             _ = country_in.get_junctions(Session)
+#         country_create = CountryCreate.model_validate(country_in.model_dump())
+#         _ = Country(**country_create.model_dump())
+#     except Exception as err:
+#         print("error:", err)
 
 
 # def format_validation_error(err: ValidationError) -> str:
@@ -87,9 +90,70 @@ def run_stuff() -> None:
 #         fmt.append("")
 
 
+async def create_loc():
+    db = init_db()
+    with db.get_session() as Session:
+        testuser = await read_user(1, Session)
+        if not testuser:
+            print("no user found")
+            return None
+
+        print(testuser.home_location)
+
+        for loc in testuser.user_locations:
+            print(loc)
+
+        # if not testuser:
+        #     print("no user found")
+        #     return None
+        # print(testuser)
+        #
+        # hal = await read_location(2, Session)
+        # if not hal:
+        #     print("no location found")
+        #     return None
+        # print(hal)
+        #
+        # user_location = await create_user_location(
+        #     UserLocationCreate(user_id=testuser.id, location_id=hal.id), Session
+        # )
+        # print(user_location)
+
+        # halle = Session.scalar()
+        # hal_req = get_request(
+        #     GEOCODING_API,
+        #     params={"name": "Halle (Saale)", "count": 1},
+        # )
+        # hal_data = hal_req["results"][0]
+        # pprint(hal_data)
+        # country = await read_country_by_code(hal_data["country_code"], Session)
+        # if not country:
+        #     return None
+        # hal_data["country_id"] = country.id
+        # hal_in = LocationCreate.model_validate(hal_data, from_attributes=True)
+        # hal = await create_location(hal_in, Session)
+        # print(hal)
+    return None
+
+
+def run_stuff() -> None:
+    asyncio.run(create_loc())
+
+
 def main() -> None:
-    generate_env_file = EnvFileGenerator()
-    generate_env_file()
+    run_stuff()
+    # pw = "test_passwort@123!!"
+    # hash = hash_password(pw)
+    # print("hash:", hash)
+    # print(
+    #     verify_password(
+    #         "test_passwort@123!!",
+    #         "$argon2id$v=19$m=65536,t=3,p=4$soGpNcfLKPZy9hHP/5+v9A$PZd79f85lEnVx00SRpN/+RSDoYNLlyF2pSErQKwgNzY",
+    #     )
+    # )
+
+    # generate_env_file = EnvFileGenerator()
+    # generate_env_file()
 
     ...
     # run_stuff()

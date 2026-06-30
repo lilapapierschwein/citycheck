@@ -3,10 +3,12 @@ from pathlib import Path
 from time import sleep
 from typing import Literal
 
-from citycheck import app_config
+from citycheck import get_config
 from citycheck.api.main import main as api_main
 from citycheck.core.utils import get_current_datetime, validate_file
 from citycheck.core.utils.utils import api_is_running, init_api_shutdown
+
+app_config = get_config()
 
 PROG = "citycheck"
 VERSION = "0.1.0"

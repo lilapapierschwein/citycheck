@@ -1,4 +1,5 @@
 import sys
+from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any, TypedDict, override
 
@@ -18,6 +19,18 @@ from pydantic_settings import (
 )
 
 from .utils import get_project_root
+
+
+class PyprojectSettingsSource(TomlConfigSettingsSource):
+    @override
+    def __call__(self) -> dict[str, Any]:
+        raw = super().__call__()
+        # navigate to [tool.poetry] or [project]
+        project = raw.get("project", {})
+        return {
+            "app_name": project.get("name"),
+            "version": project.get("version"),
+        }
 
 
 class APIDefaults(TypedDict):
@@ -128,7 +141,8 @@ class ApiConfig(BaseModel):
 
 
 class Config(BaseSettings):
-    general: GeneralConfig
+    app_name: str = Field(default="citycheck")
+    version: str = Field(pattern=r"^[0-9]+(\.{1}[0-9]+){0,2}$")
     secrets: Secrets
     security: Security
     paths: PathsConfig
@@ -156,19 +170,21 @@ class Config(BaseSettings):
             EnvSettingsSource(settings_cls),
             DotEnvSettingsSource(settings_cls),
             TomlConfigSettingsSource(settings_cls),
+            PyprojectSettingsSource(settings_cls, toml_file="pyproject.toml"),
         )
 
 
+@lru_cache(maxsize=1)
 def get_config() -> Config:
+    """
+    Getter function for the Config object, cached using with maxsize of 1 to ensure that
+    the configuration is loaded only once during the application's lifetime.
+    """
     try:
-        cfg = Config()  # pyright: ignore[reportCallIssue]
-        return cfg
+        return Config()  # pyright: ignore[reportCallIssue]
     except RuntimeError as err:
         print("error:", err)
         sys.exit(1)
     except Exception as err:
         print("error:", err)
         sys.exit(1)
-
-
-app_config = get_config()

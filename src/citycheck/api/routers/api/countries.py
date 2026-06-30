@@ -14,7 +14,16 @@ router = APIRouter(prefix="/countries", tags=["countries"])
 async def get_country(country_id: int, session: CRUDSession):
     country = await crud.read_country(country_id, session)
     if not country:
-        raise HTTPException(status_code=404, detail="Language not found.")
+        raise HTTPException(status_code=404, detail="Country not found.")
+    schema = CountrySchema.model_validate(country)
+    return schema
+
+
+@router.get("/{country_code}")
+async def get_country_by_code(country_code: str, session: CRUDSession):
+    country = await crud.read_country_by_code(country_code, session)
+    if not country:
+        raise HTTPException(status_code=404, detail="Country not found.")
     schema = CountrySchema.model_validate(country)
     return schema
 

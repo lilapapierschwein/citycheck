@@ -1,5 +1,5 @@
 from .config import (
-    app_config as app_config,
+    get_config as get_config,
     APIDefaults as APIDefaults,
 )
 from .utils import (
@@ -13,7 +13,7 @@ from .utils import (
 )
 
 __all__ = [
-    "app_config",
+    "get_config",
     "APIDefaults",
     "format_timedelta",
     "get_current_datetime",
