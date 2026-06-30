@@ -1,3 +1,4 @@
+import re
 from collections.abc import Mapping
 from datetime import UTC
 from datetime import datetime as dt
@@ -44,6 +45,24 @@ class TokenData(BaseModel):
 
 
 pwd_context = PasswordHash.recommended()
+
+
+password_patterns = [
+    re.compile(r"[A-Z]+"),
+    re.compile(r"[a-z]+"),
+    re.compile(r"[0-9]"),
+    re.compile(r"[-_*!?.%$§'()+#:{}]+"),
+]
+
+password_antipattern = re.compile(r"[\s\^\\\[\]]")
+
+
+def password_is_valid(pw: str) -> bool:
+    return (
+        len(pw) >= 10
+        and all(re.search(pattern, pw) for pattern in password_patterns)
+        and not re.search(password_antipattern, pw)
+    )
 
 
 def hash_password(pw: str) -> str:

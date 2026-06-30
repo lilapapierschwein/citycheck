@@ -1,0 +1,17 @@
+{% extends "base.html" %} 
+
+{% block scripts %}
+    <script src="/static/js/redirect.js" defer></script>
+{% endblock %}
+    
+{% block content %}
+    <div
+        hx-get="/redirect"
+        hx-trigger="load delay:{{ redirect_seconds }}s"
+    >
+        <p>logout successful.</p>
+        <p>you will be redirected automatically in <span id="redirectTimerSeconds">{{ redirect_seconds }}</span> <span id="rediectTimerUnit">seconds</span>...</p>
+        <br>
+        <p>(if automatic redirect does not work, click <a href="/">here</a>)</p>
+    </div>
+{% endblock %}

@@ -1,4 +1,5 @@
 import re
+from datetime import datetime as dt
 from typing import Annotated, ClassVar, override
 
 from pydantic import (
@@ -10,24 +11,25 @@ from pydantic import (
     model_serializer,
 )
 
+from .activity import ActivityModel
 from .location import LocationModel
 
 
 class UserPasswordCreate(BaseModel):
     user_id: int
-    password: str
+    password_hash: str
     is_valid: bool = Field(default=True)
 
     @override
     def __str__(self) -> str:
-        return self.password
+        return self.password_hash
 
     @override
     def __repr__(self) -> str:
         return (
             "UserPasswordCreate("
             f"user_id={repr(self.user_id)}, "
-            f"password={repr(self.password)}, "
+            f"password={repr(self.password_hash)}, "
             f"is_valid={repr(self.is_valid)}"
             ")"
         )
@@ -59,6 +61,54 @@ class UserPasswordModel(BaseModel):
 
 
 class UserPasswordSchema(UserPasswordModel): ...
+
+
+class UserActivityCreate(BaseModel):
+    user_id: int
+    activity_id: int
+    timestamp: dt | None = None
+
+    @override
+    def __str__(self) -> str:
+        return f"Activity#{self.activity_id} (User#{self.user_id})"
+
+    @override
+    def __repr__(self) -> str:
+        return (
+            "UserActivityCreate("
+            f"activity_id={repr(self.activity_id)}, "
+            f"user_id={repr(self.user_id)}, "
+            f"timestamp={repr(self.timestamp)}"
+            ")"
+        )
+
+
+class UserActivityModel(BaseModel):
+    id: int
+    user_id: int
+    activity_id: int
+    timestamp: dt
+    user: UserModel
+    activity: ActivityModel
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(from_attributes=True)
+
+    @override
+    def __str__(self) -> str:
+        return f"{self.activity.name} ({self.user.username}) @{self.timestamp}"
+
+    @override
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}("
+            f"user_id={repr(self.user_id)}, "
+            f"activity_id={repr(self.activity_id)}, "
+            f"timestamp={repr(self.timestamp)}"
+            ")"
+        )
+
+
+class UserActivitySchema(UserActivityModel): ...
 
 
 def validate_email(u: object) -> str:
@@ -107,10 +157,7 @@ class UserModel(BaseModel):
     home_location_id: int | None
     home_location: LocationModel | None
     user_locations: list[UserLocationModel]
-
-    @property
-    def is_active(self) -> bool:
-        return not self.is_disabled and not self.is_deleted
+    activities: list[ActivityModel]
 
     model_config: ClassVar[ConfigDict] = ConfigDict(
         from_attributes=True, arbitrary_types_allowed=True
@@ -133,6 +180,10 @@ class UserModel(BaseModel):
             f"user_locations={repr(self.user_locations)}"
             ")"
         )
+
+    @property
+    def is_active(self) -> bool:
+        return not self.is_disabled and not self.is_deleted
 
 
 class UserSchema(UserModel):

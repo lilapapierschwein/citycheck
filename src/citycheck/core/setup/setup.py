@@ -1,11 +1,12 @@
 from colorama import Fore, Style
 
 from citycheck import get_config
+from citycheck.api.crud import create_user
+from citycheck.api.crud.user import add_user_activity, set_password
 from citycheck.api.models.user import UserCreate
+from citycheck.api.security import hash_password, password_is_valid
+from citycheck.core.utils.enums import UserAction
 from citycheck.db.db import init_db
-from citycheck.db.models import (
-    User,
-)
 
 # from .cli import parse_args
 from .data import get_initial_data
@@ -16,7 +17,7 @@ app_config = get_config()
 filepaths = app_config.paths.files
 
 
-def run_setup(
+async def run_setup(
     rebuild_db: bool = False,
     update_init_data: bool = False,
     insert_testuser: bool = False,
@@ -66,13 +67,18 @@ def run_setup(
             if verbose:
                 print("inserting testuser...", end="\r")
             testuser_data = {"username": "testuser", "email": "testuser@example.com"}
-            tu_validated = UserCreate.model_validate(testuser_data)
-            testuser = User(**tu_validated.model_dump())
-            Session.add(testuser)
-            Session.commit()
+            testuser = await create_user(UserCreate.model_validate(testuser_data), Session)
+
+            passwd = "testUs3R@cc01!!"
+            if not password_is_valid(passwd):
+                raise ValueError("Invalid password")
+            _ = await set_password(testuser, hash_password(passwd), Session)
+            _ = await add_user_activity(testuser, UserAction.SIGNUP, Session)
             if verbose:
                 print(f"inserting testuser...{Fore.GREEN}DONE{Style.RESET_ALL}")
-                print(f"INSERT: [user#{testuser.id}] {testuser} ({testuser.email})")
+                print(
+                    f"INSERT: [user#{testuser.id}] {testuser} ({testuser.email}) | password: '{passwd}'"
+                )
 
     if verbose:
         print_headline(

@@ -6,7 +6,8 @@ from sqlalchemy.sql import func, select
 
 from citycheck.api.filters_forms.users import UserQueryFilters
 from citycheck.api.models.user import UserCreate
-from citycheck.db.models import User, UserPassword
+from citycheck.core.utils.enums import UserAction
+from citycheck.db.models import User, UserActivity, UserPassword
 
 
 async def create_user(data: UserCreate, session: Session) -> User:
@@ -45,11 +46,6 @@ async def set_password(user: User, password_hash: str, session: Session):
     for pw in user.passwords_hashes:
         if pw.is_valid:
             pw.is_valid = False
-    # _ = session.execute(
-    #     update(UserPassword)
-    #     .where(and_(UserPassword.user_id == user.id, UserPassword.is_valid))
-    #     .values(is_valid=False)
-    # )
 
     new_pw = UserPassword(user_id=user.id, password_hash=password_hash)
     session.add(new_pw)
@@ -57,7 +53,14 @@ async def set_password(user: User, password_hash: str, session: Session):
     return new_pw
 
 
-async def verifiy_credentials(): ...
+async def add_user_activity(user: User, action: UserAction, session: Session):
+    new_activity = UserActivity(user_id=user.id, activity_id=action)
+    session.add(new_activity)
+    session.commit()
+    return new_activity
+
+
+async def verify_credentials(): ...
 
 
 # def update_user(user_id: int, session: Session) -> User: ...
@@ -68,7 +71,15 @@ async def delete_user(user_id: int, session: Session) -> None:
         user = await read_user(user_id, session)
         if not user:
             raise NoResultFound(f"User with id {user_id} not found.")
-        session.delete(user)
+
+        for pw in user.passwords_hashes:
+            pw.user_id = None
+            if pw.is_valid:
+                pw.is_valid = False
+        for ua in user.activities:
+            ua.user_id = None
+
+        user.is_deleted = True
         session.commit()
         print(f"User #{user_id} ({repr(user.username)}) deleted.")
     except NoResultFound as err:

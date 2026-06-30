@@ -18,6 +18,7 @@ data/*
 *.bkp
 *.old
 run
+node_modules/
 
 # Secrets
 *.env

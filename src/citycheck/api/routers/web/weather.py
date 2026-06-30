@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from fastapi.responses import RedirectResponse
 
 from citycheck.api.security import WebCurrentUser
 from citycheck.web.templates import templates
@@ -13,5 +14,9 @@ async def weather_page(
     # session: CRUDSession,
     # is_hx: HxReq,
 ):
+    if not current_user:
+        return RedirectResponse("/", status_code=303)
     template = "weather/index.html"
-    return templates.TemplateResponse(request, template, context={"page_name": "weather"})
+    return templates.TemplateResponse(
+        request, template, context={"user": current_user, "page_name": "weather"}
+    )

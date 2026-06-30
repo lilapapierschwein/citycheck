@@ -60,7 +60,9 @@ from .user_location import (
     read_user_location as read_user_location,
     read_user_locations as read_user_locations,
 )
-
+from .user_password import create_user_password
+from .activity import create_activity
+from .user_activity import create_user_activity
 
 __all__ = [
     "create_continent",
@@ -107,4 +109,7 @@ __all__ = [
     "create_user_location",
     "read_user_location",
     "read_user_locations",
+    "create_user_password",
+    "create_activity",
+    "create_user_activity",
 ]

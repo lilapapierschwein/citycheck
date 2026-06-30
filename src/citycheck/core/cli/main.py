@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from typing import Any, Literal
 
@@ -25,11 +26,13 @@ def run_cli() -> None:
 
     match cmd:
         case "setup":
-            run_setup(
-                rebuild_db=parsed_args.rebuild_db or False,
-                update_init_data=parsed_args.update_data or False,
-                insert_testuser=parsed_args.testuser or False,
-                verbose=not (parsed_args.quiet or False),
+            asyncio.run(
+                run_setup(
+                    rebuild_db=parsed_args.rebuild_db or False,
+                    update_init_data=parsed_args.update_data or False,
+                    insert_testuser=parsed_args.testuser or False,
+                    verbose=not (parsed_args.quiet or False),
+                )
             )
         case "api":
             api_cmd: Literal["start", "stop"] | None = parsed_args.api_cmd

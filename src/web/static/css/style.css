@@ -16,6 +16,7 @@
   --toggle-pulse-bg: rgba(255, 255, 255, 0.08);
   --toggle-hover-color: #5ba95d;
 }
+
 :root.light {
   --bg-primary: #f4f7f6;
   --bg-secondary: #e6ecea;
@@ -36,7 +37,7 @@ body {
 }
 
 #wrapper {
-  display: flex;
+  /* display: flex; */
   width: 100%;
   height: 100%;
 }
@@ -45,7 +46,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 500px;
+  width: 100%;
   height: 500px;
   justify-content: center;
   align-items: center;
@@ -151,9 +152,11 @@ body {
   0% {
     background-color: var(--text-secondary);
   }
+
   50% {
     background-color: var(--toggle-pulse-bg);
   }
+
   100% {
     background-color: var(--text-secondary);
   }
@@ -170,6 +173,25 @@ main {
 }
 
 #indexSidebar {
-  flex: 2;
+  /* flex: 2; */
+  width: 20%;
   background-color: var(--bg-secondary);
 }
+
+#redirectTimerSeconds {
+  font-weight: 600;
+}
+
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1.5rem;
+
+  btn {
+    width: 100%;
+  }
+}
+
+/* #submitLogin { */
+/*   width: 100%; */
+/* } */

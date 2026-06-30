@@ -1,7 +1,7 @@
 import asyncio
 
 from citycheck import get_config
-from citycheck.api.crud import read_user
+from citycheck.api.crud import delete_user, read_user
 from citycheck.db.db import init_db
 
 app_config = get_config()
@@ -91,48 +91,57 @@ antarctica = {
 
 
 async def create_loc():
+    # pw = "NaziPunks#66*%!!"
+    # print(password_is_valid(pw))
     db = init_db()
     with db.get_session() as Session:
-        testuser = await read_user(1, Session)
-        if not testuser:
-            print("no user found")
-            return None
+        user = await read_user(1, Session)
+        if not user:
+            print("no user")
+            return
+        await delete_user(user.id, Session)
 
-        print(testuser.home_location)
+        # await delete_user(user.id, Session)
+    #     testuser = await read_user(1, Session)
+    #     if not testuser:
+    #         print("no user found")
+    #         return None
+    #
+    #     print(testuser.home_location)
+    #
+    #     for loc in testuser.user_locations:
+    #         print(loc)
 
-        for loc in testuser.user_locations:
-            print(loc)
+    # if not testuser:
+    #     print("no user found")
+    #     return None
+    # print(testuser)
+    #
+    # hal = await read_location(2, Session)
+    # if not hal:
+    #     print("no location found")
+    #     return None
+    # print(hal)
+    #
+    # user_location = await create_user_location(
+    #     UserLocationCreate(user_id=testuser.id, location_id=hal.id), Session
+    # )
+    # print(user_location)
 
-        # if not testuser:
-        #     print("no user found")
-        #     return None
-        # print(testuser)
-        #
-        # hal = await read_location(2, Session)
-        # if not hal:
-        #     print("no location found")
-        #     return None
-        # print(hal)
-        #
-        # user_location = await create_user_location(
-        #     UserLocationCreate(user_id=testuser.id, location_id=hal.id), Session
-        # )
-        # print(user_location)
-
-        # halle = Session.scalar()
-        # hal_req = get_request(
-        #     GEOCODING_API,
-        #     params={"name": "Halle (Saale)", "count": 1},
-        # )
-        # hal_data = hal_req["results"][0]
-        # pprint(hal_data)
-        # country = await read_country_by_code(hal_data["country_code"], Session)
-        # if not country:
-        #     return None
-        # hal_data["country_id"] = country.id
-        # hal_in = LocationCreate.model_validate(hal_data, from_attributes=True)
-        # hal = await create_location(hal_in, Session)
-        # print(hal)
+    # halle = Session.scalar()
+    # hal_req = get_request(
+    #     GEOCODING_API,
+    #     params={"name": "Halle (Saale)", "count": 1},
+    # )
+    # hal_data = hal_req["results"][0]
+    # pprint(hal_data)
+    # country = await read_country_by_code(hal_data["country_code"], Session)
+    # if not country:
+    #     return None
+    # hal_data["country_id"] = country.id
+    # hal_in = LocationCreate.model_validate(hal_data, from_attributes=True)
+    # hal = await create_location(hal_in, Session)
+    # print(hal)
     return None
 
 

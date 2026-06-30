@@ -1,14 +1,13 @@
-{% extends "base.html" %}
+{% extends "base.html" %} 
 
 {% block content %}
     <div id="loginWrapper">
       <h1>citycheck</h1>
-      <h2>Login</h2>
+      <h2>Signup</h2>
         
         <div>
-            
           {% if error %}<p class="error">{{ error }}</p>{% endif %}
-          <form id="loginForm" method="post" action="/login">
+          <form id="signupForm" method="post" action="/signup">
             <div>
             <label for="username">Username: </label>
             <input type="text" name="username" required autofocus>
@@ -19,9 +18,13 @@
             <input type="password" name="password" required>
             </div>
             
-            <button type="submit" id="submitLogin">Login</button>
+            <div>
+            <label for="password2">Confirm Password: </label>
+            <input type="password" name="password2" required>
+            </div>
+
+            <button type="submit" id="submitSignup">Signup</button>
           </form>
         </div>
-    <a href="/signup">No account? Sign up here.</a>
     </div>
 {% endblock %}

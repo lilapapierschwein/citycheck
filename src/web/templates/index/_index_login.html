@@ -1,0 +1,19 @@
+{% block content %}
+<!-- <div id="loginWrapper"> -->
+  <h1>citycheck</h1>
+  <h2>Login</h2>
+
+  <div>
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="post" action="/login">
+      <label
+        >Username <input type="text" name="username" required autofocus
+      /></label>
+      <label>Password <input type="password" name="password" required /></label>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+<!-- </div> -->
+{% endblock %}

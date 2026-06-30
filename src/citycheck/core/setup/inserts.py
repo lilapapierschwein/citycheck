@@ -5,6 +5,7 @@ from colorama import Fore, Style
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
+from citycheck.api.models.activity import ActivityCreate
 from citycheck.api.models.continent import ContinentCreate
 from citycheck.api.models.country import CountryCreate, CountryIn
 from citycheck.api.models.currency import CurrencyCreate
@@ -12,6 +13,7 @@ from citycheck.api.models.language import LanguageCreate
 from citycheck.api.models.region import RegionCreate, SubregionCreate
 from citycheck.core.utils import load_json
 from citycheck.db.models import (
+    Activity,
     Continent,
     Country,
     Currency,
@@ -198,6 +200,15 @@ def insert_countries(data: list[dict[str, Any]], session: Session, verbose: bool
     )
 
 
+def insert_activities(data: list[str], session: Session):
+    print("inserting activities...", end="\r")
+    activities_data = [ActivityCreate.model_validate({"name": n}) for n in data]
+    activities = [Activity(**ad.model_dump()) for ad in activities_data]
+    session.add_all(activities)
+    session.commit()
+    print(f"inserting activities...{Fore.GREEN}DONE{Style.RESET_ALL}")
+
+
 def insert_initial_data(
     file: Path, session: Session, text_width: int = 80, verbose: bool = True
 ) -> None:
@@ -217,3 +228,4 @@ def insert_initial_data(
     insert_currencies(objects["currencies"], session, verbose)
     insert_regions_subregions(objects["regions"], session, verbose)
     insert_countries(objects["countries"], session)
+    insert_activities(data=["signup", "login", "logout"], session=session)

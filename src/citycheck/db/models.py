@@ -1,12 +1,14 @@
+from datetime import datetime as dt
 from typing import final, override
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import Column, Table, sql
+from sqlalchemy import Column, Table, func, sql
 from sqlalchemy.dialects.sqlite import BOOLEAN, INTEGER, REAL, TEXT, VARCHAR
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.orm.properties import ForeignKey
 
-from citycheck.db.types import ZoneInfoType
+from citycheck.core.utils import get_current_datetime
+from citycheck.db.types import DateTimeType, ZoneInfoType
 
 
 class Base(DeclarativeBase): ...
@@ -32,7 +34,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column("user_id", INTEGER, primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column("username", VARCHAR(255), unique=True, nullable=False)
-    email: Mapped[str] = mapped_column("email", VARCHAR(255), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column("email", VARCHAR(255), nullable=False)
     is_disabled: Mapped[bool] = mapped_column(
         "is_disabled",
         BOOLEAN,
@@ -50,7 +52,7 @@ class User(Base):
     home_location_id: Mapped[int | None] = mapped_column(
         "home_location_id",
         INTEGER,
-        ForeignKey("locations.location_id", onupdate="CASCADE", ondelete="RESTRICT"),
+        ForeignKey("locations.location_id", onupdate="CASCADE", ondelete="SET NULL"),
         nullable=True,
         default=None,
         server_default=sql.text("null"),
@@ -58,6 +60,7 @@ class User(Base):
     home_location: Mapped[Location | None] = relationship(back_populates="users_homes")
     user_locations: Mapped[list[UserLocation]] = relationship(back_populates="user")
     passwords_hashes: Mapped[list[UserPassword]] = relationship(back_populates="user")
+    activities: Mapped[list[UserActivity]] = relationship(back_populates="user")
 
     @override
     def __str__(self) -> str:
@@ -89,8 +92,8 @@ class User(Base):
         return [loc.location for loc in self.user_locations if loc.is_favorite]
 
     @property
-    def current_password(self) -> UserPassword:
-        passwd_hashes_active = [upw for upw in self.passwords_hashes if upw.is_valid]
+    def current_password(self) -> str:
+        passwd_hashes_active = [upw.password_hash for upw in self.passwords_hashes if upw.is_valid]
         if not passwd_hashes_active:
             raise LookupError(f"No valid password found for user#{self.id}")
         elif len(passwd_hashes_active) > 1:
@@ -120,6 +123,86 @@ country_language = Table(
     Column("country_id", ForeignKey("countries.country_id"), primary_key=True),  # pyright: ignore[reportUnknownArgumentType]
     Column("language_id", ForeignKey("languages.language_id"), primary_key=True),  # pyright: ignore[reportUnknownArgumentType]
 )
+
+
+@final
+class Activity(Base):
+    """Represents and activity
+
+    Attributes:
+        id (`int`): The unique identifier of the activity.
+        name (`str`): The name of the activity.
+    """
+
+    __tablename__ = "activities"
+
+    id: Mapped[int] = mapped_column("activity_id", INTEGER, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column("name", VARCHAR(255), unique=True, nullable=False)
+
+    entries: Mapped[list[UserActivity]] = relationship(back_populates="activity")
+
+    @override
+    def __str__(self) -> str:
+        return self.name
+
+    @override
+    def __repr__(self) -> str:
+        return f"Activity(id={repr(self.id)}, name={repr(self.name)})"
+
+
+@final
+class UserActivity(Base):
+    __tablename__ = "users_activities"
+
+    id: Mapped[int] = mapped_column(
+        "user_activity_id", INTEGER, primary_key=True, autoincrement=True
+    )
+    user_id: Mapped[int | None] = mapped_column(
+        "user_id",
+        INTEGER,
+        ForeignKey(
+            "users.user_id",
+            onupdate="CASCADE",
+            ondelete="SET NULL",
+        ),
+        nullable=True,
+    )
+    user: Mapped[User] = relationship(back_populates="activities")
+
+    activity_id: Mapped[int] = mapped_column(
+        "activity_id",
+        INTEGER,
+        ForeignKey(
+            "activities.activity_id",
+            onupdate="CASCADE",
+            ondelete="CASCADE",
+        ),
+        nullable=True,
+    )
+    activity: Mapped[Activity] = relationship(back_populates="entries")
+
+    timestamp: Mapped[dt] = mapped_column(
+        "timestamp",
+        DateTimeType,
+        default=get_current_datetime(),
+        server_default=func.current_timestamp(),
+        nullable=False,
+    )
+
+    @override
+    def __str__(self) -> str:
+        return f"{self.activity.name} ({self.user.username}) @{self.timestamp}"
+
+    @override
+    def __repr__(self) -> str:
+        return (
+            "UserActivity("
+            f"id={repr(self.id)}, "
+            f"user_id={repr(self.user_id)}, "
+            f"activity_id={repr(self.activity_id)}, "
+            f"timestamp={repr(self.timestamp)}"
+            ")"
+        )
 
 
 @final
@@ -604,15 +687,15 @@ class UserPassword(Base):
     id: Mapped[int] = mapped_column(
         "user_password_id", INTEGER, primary_key=True, autoincrement=True
     )
-    user_id: Mapped[int] = mapped_column(
+    user_id: Mapped[int | None] = mapped_column(
         "user_id",
         INTEGER,
         ForeignKey(
             "users.user_id",
             onupdate="CASCADE",
-            ondelete="RESTRICT",
+            ondelete="CASCADE",
         ),
-        nullable=False,
+        nullable=True,
     )
     user: Mapped[User] = relationship(back_populates="passwords_hashes")
 

@@ -2,22 +2,8 @@
 
 {% block header %}
 {% include "components/navbar.html" %}
-{% endblock header %}
+{% endblock %}
 
 {% block content %}
-<div id="indexSidebar">
-    <p>Saved Places</p>
-    <br>
-    <p>HOME:</p>
-    {% if user.home_location %}
-        <p>{{ user.home_location }}</p>
-    {% else %}
-        <p>NONE</p>
-    {% endif %}
-    <br>
-    <p>SAVED ({{ user.user_locations | length }})</p>
-    {% for location in user.user_locations %}
-        <p>{{ location.location.name }}</p>
-    {% endfor %}
-</div>
-{% endblock %}
+{% include "index/_index_page.html" %}
+{% endblock content %}
