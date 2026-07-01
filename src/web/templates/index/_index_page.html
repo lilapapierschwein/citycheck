@@ -1,28 +1,7 @@
 {% block content %}
-  <div class="layout">
+  <div class="layout" id="indexLayout">
 
-    <aside class="sidebar">
-      <form class="sidebar-search" >
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input placeholder="Filter saved locations…" id="filterInput" hx-trigger="keyup changed, search" type="search" hx-target="#locationList" hx-select="#locationList" hx-get="/user/locations" name="q">
-      </form>
-
-      <div class="sidebar-header">
-        <span class="label">Saved</span>
-              <span class="count" id="savedCount">{{ user.user_locations | length }}</span>
-      </div>
-
-      <ul class="location-list" id="locationList">
-        {% for ua in user.user_locations %}
-            {{ ua.location.name }}
-        {% endfor %}
-      </ul>
-
-      <div class="sidebar-footer">
-        <span>SYNCED</span>
-        <span id="footerClock">--:--</span>
-      </div>
-    </aside>
+    {% include "index/_index_page_sidebar.html" %}
 
     <main class="main">
       <div class="map-search-bar">

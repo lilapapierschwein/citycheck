@@ -4,22 +4,36 @@ from citycheck.api.crud.user_location import read_user_locations_by_user
 from citycheck.api.filters_forms.user_location import UserLocationQueryFilters
 from citycheck.api.security import CredentialsException, WebCurrentUser
 from citycheck.api.utils import CRUDSession, HxReq
-from citycheck.db.models import User
+from citycheck.db.models import Location, User
 from citycheck.web.templates import templates
 
 router = APIRouter(tags=["web"])
 
 
 @router.get("/")
-async def home(request: Request, current_user: WebCurrentUser, is_hx: HxReq):
+async def home(
+    request: Request,
+    current_user: WebCurrentUser,
+    is_hx: HxReq,
+    session: CRUDSession,
+    filters: UserLocationQueryFilters,
+):
     if not current_user:
         return templates.TemplateResponse(request, "login/index.html", status_code=303)
 
     template = "index/_index_page.html" if is_hx else "index/index.html"
-    context: dict[str, User | bool] = {"user": current_user}
+
+    locations = [loc.location for loc in current_user.user_locations]
+    if filters.q:
+        locations_result = await read_user_locations_by_user(current_user, filters, session)
+        locations = [loc.location for loc in locations_result]
+
+    context: dict[str, User | list[Location] | UserLocationQueryFilters] = {
+        "user": current_user,
+        "locations": locations,
+        "filters": filters,
+    }
     response = templates.TemplateResponse(request, template, context=context, status_code=200)
-    # if sum([1 for act in current_user.activities if act.id == UserAction.LOGIN], 0) <= 1:
-    #     response.headers["is_new_user"] = "1"
     return response
 
 

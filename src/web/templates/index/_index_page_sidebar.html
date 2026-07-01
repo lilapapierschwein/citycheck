@@ -1,0 +1,41 @@
+<aside class="sidebar">
+  <div class="sidebar-search">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+    <input
+      placeholder="Filter saved locations…"
+      id="filterInput"
+      hx-trigger="keyup changed, search"
+      hx-target="#indexLayout"
+      hx-get="/"
+      name="q"
+      {% if filters.q %}
+        value="{{ filters.q }}"
+      {% endif %}
+    />
+  </div>
+
+  <div class="sidebar-header">
+    <span class="label">Saved</span>
+    <span class="count" id="savedCount"
+      >{{ user.user_locations | length }}</span
+    >
+  </div>
+
+  <ul class="location-list" id="locationList">
+    {% include "index/_index_user_locations.html" %}
+  </ul>
+
+  <div class="sidebar-footer">
+    <span>SYNCED</span>
+    <span id="footerClock">--:--</span>
+  </div>
+</aside>
