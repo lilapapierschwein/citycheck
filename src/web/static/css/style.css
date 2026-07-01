@@ -35,6 +35,179 @@ body {
   color: var(--text-primary);
   padding-bottom: 90px;
 }
+.layout {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* -- SIDEBAR -- */
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 18px;
+  overflow-y: auto;
+}
+
+.sidebar-search {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.sidebar-search input {
+  width: 100%;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: "Inter", sans-serif;
+  font-size: 13.5px;
+  padding: 10px 12px 10px 34px;
+  border-radius: 8px;
+  transition: border-color 0.15s ease;
+}
+
+.sidebar-search input::placeholder {
+  color: var(--text-faint);
+}
+.sidebar-search input:focus {
+  border-color: var(--orange);
+  outline: none;
+}
+
+.sidebar-search svg {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  stroke: var(--text-faint);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 0 2px;
+}
+
+.sidebar-header .label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.sidebar-header .count {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--amber);
+}
+
+.location-list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  flex: 1;
+}
+
+.location-item {
+  padding: 12px 6px 14px;
+  border-bottom: 1px dashed var(--border);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-radius: 6px;
+}
+
+.location-item:hover {
+  background: var(--surface-2);
+}
+
+.location-item.active {
+  background: var(--orange-glow);
+}
+
+.loc-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.loc-code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--orange);
+  background: rgba(255, 107, 53, 0.12);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.loc-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
+
+.loc-remove {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
+}
+
+.location-item:hover .loc-remove {
+  opacity: 1;
+}
+.loc-remove:hover {
+  color: #e86a5a;
+}
+
+.loc-meta {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 2px;
+}
+
+.loc-country {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.loc-coords {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 0.01em;
+}
+
+.sidebar-footer {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-faint);
+  display: flex;
+  justify-content: space-between;
+  font-family: "JetBrains Mono", monospace;
+}
 
 #wrapper {
   /* display: flex; */
@@ -165,6 +338,159 @@ body {
 @media (prefers-reduced-motion: reduce) {
   #themeToggle:hover {
     animation: none;
+  }
+}
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+
+.map-search-bar {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(520px, calc(100% - 48px));
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  padding: 4px 4px 4px 14px;
+}
+
+.map-search-bar svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--text-faint);
+  flex-shrink: 0;
+}
+
+.map-search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+}
+
+.map-search-bar input::placeholder {
+  color: var(--text-faint);
+}
+.map-search-bar input:focus {
+  outline: none;
+}
+
+.map-search-bar button {
+  background: var(--orange);
+  color: #1a1613;
+  border: none;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.map-search-bar button:hover {
+  background: var(--orange-dim);
+}
+
+/* Dark-mode tint for OSM tiles */
+.leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.92)
+    saturate(0.55);
+}
+
+.leaflet-container {
+  background: var(--bg) !important;
+  font-family: "Inter", sans-serif;
+}
+
+.leaflet-control-zoom a {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--surface-2) !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(26, 22, 19, 0.85) !important;
+  color: var(--text-faint) !important;
+}
+.leaflet-control-attribution a {
+  color: var(--amber) !important;
+}
+
+/* custom pin */
+.wander-pin {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wander-pin svg {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border);
+  border-radius: 8px !important;
+}
+.leaflet-popup-tip {
+  background: var(--surface) !important;
+}
+.leaflet-popup-content {
+  margin: 10px 12px !important;
+}
+
+.popup-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  margin-bottom: 3px;
+}
+.popup-coords {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--amber);
+}
+
+/* scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (max-width: 720px) {
+  .navlinks a span.full {
+    display: none;
+  }
+  .sidebar {
+    width: 220px;
   }
 }
 

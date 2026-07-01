@@ -1,20 +1,37 @@
 {% block content %}
-    {% if is_new_user %}
-        <p>Hello, New User!</p>
-    {% endif %}
-    <div id="indexSidebar">
-      <p>Saved Places</p>
-      <br />
-      <p>HOME:</p>
-      {% if user.home_location %}
-      <p>{{ user.home_location }}</p>
-      {% else %}
-      <p>NONE</p>
-      {% endif %}
-      <br />
-      <p>SAVED ({{ user.user_locations | length }})</p>
-      {% for location in user.user_locations %}
-      <p>{{ location.location.name }}</p>
-      {% endfor %}
-    </div>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <form class="sidebar-search" >
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Filter saved locations…" id="filterInput" hx-trigger="keyup changed, search" type="search" hx-target="#locationList" hx-select="#locationList" hx-get="/user/locations" name="q">
+      </form>
+
+      <div class="sidebar-header">
+        <span class="label">Saved</span>
+              <span class="count" id="savedCount">{{ user.user_locations | length }}</span>
+      </div>
+
+      <ul class="location-list" id="locationList">
+        {% for ua in user.user_locations %}
+            {{ ua.location.name }}
+        {% endfor %}
+      </ul>
+
+      <div class="sidebar-footer">
+        <span>SYNCED</span>
+        <span id="footerClock">--:--</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="map-search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search for a new destination…" id="newLocationInput">
+        <button id="addLocationBtn">Add</button>
+      </div>
+
+      <div id="map"></div>
+    </main>
+  </div>
 {% endblock %}

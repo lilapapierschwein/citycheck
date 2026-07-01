@@ -1,6 +1,6 @@
-[general]
-app_name = "citycheck"
-version = "0.0.0"
+# [general]
+# app_name = "citycheck"
+# version = "0.0.0"
 
 [paths]
 root_markers = ["pyproject.toml", ".gitignore", ".venv"]

@@ -3,8 +3,9 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
+from citycheck.api.filters_forms.user_location import UserLocationQueryFilters
 from citycheck.api.models.user import UserLocationCreate
-from citycheck.db.models import UserLocation
+from citycheck.db.models import Location, User, UserLocation
 
 from .location import read_location
 from .user import read_user
@@ -43,6 +44,16 @@ async def read_user_location(user_location_id: int, session: Session) -> UserLoc
     return session.scalar(select(UserLocation).where(UserLocation.id == user_location_id))
 
 
-async def read_user_locations(session: Session):
+async def read_user_locations(filters: UserLocationQueryFilters, session: Session):
     total = session.scalar(select(func.count()).select_from(UserLocation)) or 0
     return session.scalars(select(UserLocation)).all(), total
+
+
+async def read_user_locations_by_user(
+    user: User, filters: UserLocationQueryFilters, session: Session
+):
+    return session.scalars(
+        select(UserLocation)
+        .join(UserLocation.location)
+        .where(and_(UserLocation.user_id == user.id), Location.name.ilike(f"%{filters.q}%"))
+    ).all()

@@ -19,12 +19,3 @@ async def create_user_password(
     session.add(user_password_in)
     session.commit()
     return user_password_in
-
-
-# async def read_user_location(user_location_id: int, session: Session) -> UserLocation | None:
-#     return session.scalar(select(UserLocation).where(UserLocation.id == user_location_id))
-#
-#
-# async def read_user_locations(session: Session):
-#     total = session.scalar(select(func.count()).select_from(UserLocation)) or 0
-#     return session.scalars(select(UserLocation)).all(), total
